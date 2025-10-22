@@ -8,14 +8,20 @@ A simulation engine project with a Spring Boot backend and React frontend.
 
 The project now includes a fully functional hunter-gatherer tribe simulation with:
 
-- **Resource Management**: Track food and water resources
+- **Resource Management**: Track food and water resources at tribe and family levels
 - **Population Dynamics**: Manage tribe members with different roles (Hunter, Gatherer, Child, Elder)
-- **Health System**: Health tracking affected by resource availability
-- **Policy System**: Configurable taxes and incentives
+- **Family System**: Members organized into families with independent storage
+- **Skill System**: Hunting and gathering skills that improve with practice
+- **Health System**: Health tracking affected by resource availability and family support
+- **Sharing & Borrowing**: Families can share resources based on tribe bond level
+- **Bond Mechanics**: Tribe cohesion affects cooperation and survival
+- **Central Storage**: Optional tribe-level storage pool with configurable taxation
+- **Storage Decay**: Realistic resource spoilage over time
+- **Policy System**: Configurable rules for incentives, sharing, decay, and taxation
 - **Tick-based Simulation**: Daily advancement with automated resource gathering, consumption, and aging
 - **Scheduled Jobs**: Automatic daily ticks at midnight
 - **REST API**: Full CRUD operations and simulation control
-- **Comprehensive Tests**: 10+ unit tests covering all functionality
+- **Comprehensive Tests**: 36+ unit tests covering all functionality
 
 📖 **[View Full Documentation](wiki/Home.md)**
 
