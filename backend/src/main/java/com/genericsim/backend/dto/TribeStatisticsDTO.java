@@ -2,6 +2,9 @@ package com.genericsim.backend.dto;
 
 import com.genericsim.backend.model.Person;
 import com.genericsim.backend.model.Tribe;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 import java.util.Map;
@@ -12,6 +15,9 @@ import java.util.stream.Collectors;
  * Provides a frontend-friendly summary of tribe metrics including population,
  * resources, and role distribution.
  */
+@Getter
+@Setter
+@NoArgsConstructor
 public class TribeStatisticsDTO {
     private Long tribeId;
     private String tribeName;
@@ -31,6 +37,8 @@ public class TribeStatisticsDTO {
     /**
      * Role breakdown showing count of members per role
      */
+    @Getter
+    @Setter
     public static class RoleBreakdown {
         private int hunters;
         private int gatherers;
@@ -46,20 +54,13 @@ public class TribeStatisticsDTO {
             this.children = roleCounts.getOrDefault(Person.PersonRole.CHILD, 0L).intValue();
             this.elders = roleCounts.getOrDefault(Person.PersonRole.ELDER, 0L).intValue();
         }
-        
-        public int getHunters() { return hunters; }
-        public void setHunters(int hunters) { this.hunters = hunters; }
-        public int getGatherers() { return gatherers; }
-        public void setGatherers(int gatherers) { this.gatherers = gatherers; }
-        public int getChildren() { return children; }
-        public void setChildren(int children) { this.children = children; }
-        public int getElders() { return elders; }
-        public void setElders(int elders) { this.elders = elders; }
     }
     
     /**
      * Health statistics for the tribe
      */
+    @Getter
+    @Setter
     public static class HealthStats {
         private int averageHealth;
         private int minHealth;
@@ -90,20 +91,13 @@ public class TribeStatisticsDTO {
                     .count();
             }
         }
-        
-        public int getAverageHealth() { return averageHealth; }
-        public void setAverageHealth(int averageHealth) { this.averageHealth = averageHealth; }
-        public int getMinHealth() { return minHealth; }
-        public void setMinHealth(int minHealth) { this.minHealth = minHealth; }
-        public int getMaxHealth() { return maxHealth; }
-        public void setMaxHealth(int maxHealth) { this.maxHealth = maxHealth; }
-        public int getHealthyMembers() { return healthyMembers; }
-        public void setHealthyMembers(int healthyMembers) { this.healthyMembers = healthyMembers; }
     }
     
     /**
      * Resource statistics
      */
+    @Getter
+    @Setter
     public static class ResourceStats {
         private int food;
         private int water;
@@ -127,18 +121,13 @@ public class TribeStatisticsDTO {
                 this.resourceStatus = "CRITICAL";
             }
         }
-        
-        public int getFood() { return food; }
-        public void setFood(int food) { this.food = food; }
-        public int getWater() { return water; }
-        public void setWater(int water) { this.water = water; }
-        public String getResourceStatus() { return resourceStatus; }
-        public void setResourceStatus(String resourceStatus) { this.resourceStatus = resourceStatus; }
     }
     
     /**
      * Policy summary
      */
+    @Getter
+    @Setter
     public static class PolicySummary {
         private int foodTaxRate;
         private int waterTaxRate;
@@ -151,15 +140,6 @@ public class TribeStatisticsDTO {
             this.huntingIncentive = huntingIncentive;
             this.gatheringIncentive = gatheringIncentive;
         }
-        
-        public int getFoodTaxRate() { return foodTaxRate; }
-        public void setFoodTaxRate(int foodTaxRate) { this.foodTaxRate = foodTaxRate; }
-        public int getWaterTaxRate() { return waterTaxRate; }
-        public void setWaterTaxRate(int waterTaxRate) { this.waterTaxRate = waterTaxRate; }
-        public int getHuntingIncentive() { return huntingIncentive; }
-        public void setHuntingIncentive(int huntingIncentive) { this.huntingIncentive = huntingIncentive; }
-        public int getGatheringIncentive() { return gatheringIncentive; }
-        public void setGatheringIncentive(int gatheringIncentive) { this.gatheringIncentive = gatheringIncentive; }
     }
     
     /**
@@ -184,24 +164,4 @@ public class TribeStatisticsDTO {
             tribe.getPolicy().getGatheringIncentive()
         ) : null;
     }
-    
-    public TribeStatisticsDTO() {
-    }
-    
-    public Long getTribeId() { return tribeId; }
-    public void setTribeId(Long tribeId) { this.tribeId = tribeId; }
-    public String getTribeName() { return tribeName; }
-    public void setTribeName(String tribeName) { this.tribeName = tribeName; }
-    public long getCurrentTick() { return currentTick; }
-    public void setCurrentTick(long currentTick) { this.currentTick = currentTick; }
-    public int getTotalPopulation() { return totalPopulation; }
-    public void setTotalPopulation(int totalPopulation) { this.totalPopulation = totalPopulation; }
-    public RoleBreakdown getRoleBreakdown() { return roleBreakdown; }
-    public void setRoleBreakdown(RoleBreakdown roleBreakdown) { this.roleBreakdown = roleBreakdown; }
-    public HealthStats getHealthStats() { return healthStats; }
-    public void setHealthStats(HealthStats healthStats) { this.healthStats = healthStats; }
-    public ResourceStats getResourceStats() { return resourceStats; }
-    public void setResourceStats(ResourceStats resourceStats) { this.resourceStats = resourceStats; }
-    public PolicySummary getPolicySummary() { return policySummary; }
-    public void setPolicySummary(PolicySummary policySummary) { this.policySummary = policySummary; }
 }

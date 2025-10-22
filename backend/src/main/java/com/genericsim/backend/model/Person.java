@@ -1,9 +1,15 @@
 package com.genericsim.backend.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "persons")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Person {
 
     @Id
@@ -44,9 +50,6 @@ public class Person {
         ELDER
     }
 
-    public Person() {
-    }
-
     public Person(String name, PersonRole role, int age, int health) {
         this.name = name;
         this.role = role;
@@ -54,75 +57,4 @@ public class Person {
         this.health = health;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public PersonRole getRole() {
-        return role;
-    }
-
-    public void setRole(PersonRole role) {
-        this.role = role;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
-    public int getHealth() {
-        return health;
-    }
-
-    public void setHealth(int health) {
-        this.health = health;
-    }
-
-    public Tribe getTribe() {
-        return tribe;
-    }
-
-    public void setTribe(Tribe tribe) {
-        this.tribe = tribe;
-    }
-
-    public Family getFamily() {
-        return family;
-    }
-
-    public void setFamily(Family family) {
-        this.family = family;
-    }
-
-    public double getHuntingSkill() {
-        return huntingSkill;
-    }
-
-    public void setHuntingSkill(double huntingSkill) {
-        this.huntingSkill = huntingSkill;
-    }
-
-    public double getGatheringSkill() {
-        return gatheringSkill;
-    }
-
-    public void setGatheringSkill(double gatheringSkill) {
-        this.gatheringSkill = gatheringSkill;
-    }
 }
