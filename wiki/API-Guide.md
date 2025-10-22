@@ -188,6 +188,109 @@ Retrieve the current state of a specific tribe.
 
 ---
 
+### Get Tribe Statistics
+
+Retrieve aggregated statistics for a tribe in a frontend-friendly format.
+
+**Endpoint:** `GET /tribes/{id}/statistics`
+
+**Parameters:**
+- `id` (path) - The tribe ID
+
+**Response:** `200 OK`
+```json
+{
+  "tribeId": 1,
+  "tribeName": "Northern Tribe",
+  "currentTick": 10,
+  "totalPopulation": 6,
+  "roleBreakdown": {
+    "hunters": 2,
+    "gatherers": 2,
+    "children": 1,
+    "elders": 1
+  },
+  "healthStats": {
+    "averageHealth": 96,
+    "minHealth": 80,
+    "maxHealth": 100,
+    "healthyMembers": 6
+  },
+  "resourceStats": {
+    "food": 95,
+    "water": 88,
+    "resourceStatus": "ABUNDANT"
+  },
+  "policySummary": {
+    "foodTaxRate": 10,
+    "waterTaxRate": 10,
+    "huntingIncentive": 5,
+    "gatheringIncentive": 5
+  }
+}
+```
+
+**Resource Status Values:**
+- `ABUNDANT` - 10+ food and water per person
+- `ADEQUATE` - 5-9 food and water per person
+- `LOW` - 3-4 food and water per person
+- `CRITICAL` - Less than 3 food or water per person
+
+---
+
+### Update Tribe Policy
+
+Update the policy settings for a tribe (tax rates and incentives).
+
+**Endpoint:** `PUT /tribes/{id}/policy`
+
+**Parameters:**
+- `id` (path) - The tribe ID
+
+**Request Body:**
+```json
+{
+  "foodTaxRate": 15,
+  "waterTaxRate": 20,
+  "huntingIncentive": 8,
+  "gatheringIncentive": 10
+}
+```
+
+**Note:** All fields are optional. Only provided fields will be updated.
+
+**Example - Partial Update:**
+```json
+{
+  "huntingIncentive": 12
+}
+```
+
+**Response:** `200 OK`
+```json
+{
+  "tribeId": 1,
+  "tribeName": "Northern Tribe",
+  "description": "A resilient tribe from the northern mountains",
+  "currentTick": 10,
+  "resources": {
+    "food": 95,
+    "water": 88
+  },
+  "policy": {
+    "name": "Default Policy",
+    "description": "Standard tribe policy",
+    "foodTaxRate": 15,
+    "waterTaxRate": 20,
+    "huntingIncentive": 8,
+    "gatheringIncentive": 10
+  },
+  "members": [ ... ]
+}
+```
+
+---
+
 ### Process Simulation Tick
 
 Advance the simulation by one day (tick) for a specific tribe.
@@ -240,6 +343,18 @@ curl http://localhost:8080/api/tribes
 ### Get tribe state:
 ```bash
 curl http://localhost:8080/api/tribes/1
+```
+
+### Get tribe statistics:
+```bash
+curl http://localhost:8080/api/tribes/1/statistics
+```
+
+### Update tribe policy:
+```bash
+curl -X PUT http://localhost:8080/api/tribes/1/policy \
+  -H "Content-Type: application/json" \
+  -d '{"foodTaxRate":15,"huntingIncentive":10}'
 ```
 
 ### Process a tick:

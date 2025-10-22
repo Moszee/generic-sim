@@ -1,6 +1,8 @@
 package com.genericsim.backend.service;
 
+import com.genericsim.backend.dto.PolicyUpdateDTO;
 import com.genericsim.backend.dto.TribeStateDTO;
+import com.genericsim.backend.dto.TribeStatisticsDTO;
 import com.genericsim.backend.model.*;
 import com.genericsim.backend.repository.TribeRepository;
 import org.springframework.stereotype.Service;
@@ -137,6 +139,59 @@ public class TribeService {
         return tribeRepository.findAll().stream()
             .map(this::convertToDTO)
             .collect(Collectors.toList());
+    }
+
+    /**
+     * Get tribe statistics in a frontend-friendly format.
+     * Provides aggregated data including population counts, role breakdown,
+     * health statistics, and resource status.
+     * 
+     * @param tribeId the ID of the tribe
+     * @return TribeStatisticsDTO containing aggregated statistics
+     * @throws RuntimeException if tribe is not found
+     */
+    public TribeStatisticsDTO getTribeStatistics(Long tribeId) {
+        Tribe tribe = tribeRepository.findById(tribeId)
+            .orElseThrow(() -> new RuntimeException("Tribe not found"));
+        return new TribeStatisticsDTO(tribe);
+    }
+
+    /**
+     * Update the policy settings for a tribe.
+     * Only non-null values in the PolicyUpdateDTO will be applied.
+     * 
+     * @param tribeId the ID of the tribe
+     * @param policyUpdate the policy changes to apply
+     * @return TribeStateDTO with updated state
+     * @throws RuntimeException if tribe is not found
+     */
+    @Transactional
+    public TribeStateDTO updateTribePolicy(Long tribeId, PolicyUpdateDTO policyUpdate) {
+        Tribe tribe = tribeRepository.findById(tribeId)
+            .orElseThrow(() -> new RuntimeException("Tribe not found"));
+        
+        Policy policy = tribe.getPolicy();
+        if (policy == null) {
+            policy = new Policy("Default Policy", "Standard tribe policy", 10, 10, 5, 5);
+            tribe.setPolicy(policy);
+        }
+        
+        // Update only non-null values
+        if (policyUpdate.getFoodTaxRate() != null) {
+            policy.setFoodTaxRate(policyUpdate.getFoodTaxRate());
+        }
+        if (policyUpdate.getWaterTaxRate() != null) {
+            policy.setWaterTaxRate(policyUpdate.getWaterTaxRate());
+        }
+        if (policyUpdate.getHuntingIncentive() != null) {
+            policy.setHuntingIncentive(policyUpdate.getHuntingIncentive());
+        }
+        if (policyUpdate.getGatheringIncentive() != null) {
+            policy.setGatheringIncentive(policyUpdate.getGatheringIncentive());
+        }
+        
+        tribeRepository.save(tribe);
+        return convertToDTO(tribe);
     }
 
     private TribeStateDTO convertToDTO(Tribe tribe) {
