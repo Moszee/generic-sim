@@ -1,5 +1,7 @@
 package com.genericsim.backend.dto;
 
+import com.genericsim.backend.model.Policy;
+
 /**
  * Data Transfer Object for updating tribe policy.
  * Contains the policy parameters that can be modified.
@@ -9,6 +11,11 @@ public class PolicyUpdateDTO {
     private Integer waterTaxRate;
     private Integer huntingIncentive;
     private Integer gatheringIncentive;
+    private String sharingPriority;
+    private Boolean enableCentralStorage;
+    private Integer centralStorageTaxRate;
+    private Double storageDecayRate;
+    private Integer storageDecayInterval;
     
     public PolicyUpdateDTO() {
     }
@@ -51,5 +58,45 @@ public class PolicyUpdateDTO {
     
     public void setGatheringIncentive(Integer gatheringIncentive) {
         this.gatheringIncentive = gatheringIncentive;
+    }
+
+    public String getSharingPriority() {
+        return sharingPriority;
+    }
+
+    public void setSharingPriority(String sharingPriority) {
+        this.sharingPriority = sharingPriority;
+    }
+
+    public Boolean getEnableCentralStorage() {
+        return enableCentralStorage;
+    }
+
+    public void setEnableCentralStorage(Boolean enableCentralStorage) {
+        this.enableCentralStorage = enableCentralStorage;
+    }
+
+    public Integer getCentralStorageTaxRate() {
+        return centralStorageTaxRate;
+    }
+
+    public void setCentralStorageTaxRate(Integer centralStorageTaxRate) {
+        this.centralStorageTaxRate = centralStorageTaxRate;
+    }
+
+    public Double getStorageDecayRate() {
+        return storageDecayRate;
+    }
+
+    public void setStorageDecayRate(Double storageDecayRate) {
+        this.storageDecayRate = storageDecayRate;
+    }
+
+    public Integer getStorageDecayInterval() {
+        return storageDecayInterval;
+    }
+
+    public void setStorageDecayInterval(Integer storageDecayInterval) {
+        this.storageDecayInterval = storageDecayInterval;
     }
 }

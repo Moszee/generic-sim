@@ -21,9 +21,16 @@ public class Tribe {
     @Column(nullable = false)
     private long currentTick;
 
+    @Column(nullable = false)
+    private int bondLevel = 50;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "resources_id", referencedColumnName = "id")
     private Resources resources;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "central_storage_id", referencedColumnName = "id")
+    private Resources centralStorage;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "policy_id", referencedColumnName = "id")
@@ -31,6 +38,9 @@ public class Tribe {
 
     @OneToMany(mappedBy = "tribe", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Person> members = new ArrayList<>();
+
+    @OneToMany(mappedBy = "tribe", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Family> families = new ArrayList<>();
 
     public Tribe() {
     }
@@ -105,5 +115,39 @@ public class Tribe {
     public void removeMember(Person person) {
         members.remove(person);
         person.setTribe(null);
+    }
+
+    public List<Family> getFamilies() {
+        return families;
+    }
+
+    public void setFamilies(List<Family> families) {
+        this.families = families;
+    }
+
+    public void addFamily(Family family) {
+        families.add(family);
+        family.setTribe(this);
+    }
+
+    public void removeFamily(Family family) {
+        families.remove(family);
+        family.setTribe(null);
+    }
+
+    public int getBondLevel() {
+        return bondLevel;
+    }
+
+    public void setBondLevel(int bondLevel) {
+        this.bondLevel = bondLevel;
+    }
+
+    public Resources getCentralStorage() {
+        return centralStorage;
+    }
+
+    public void setCentralStorage(Resources centralStorage) {
+        this.centralStorage = centralStorage;
     }
 }
