@@ -16,19 +16,24 @@ import java.util.stream.Collectors;
 public class TribeService {
 
     private final TribeRepository tribeRepository;
+    private final FamilyService familyService;
     private final Random random = new Random();
 
-    public TribeService(TribeRepository tribeRepository) {
+    public TribeService(TribeRepository tribeRepository, FamilyService familyService) {
         this.tribeRepository = tribeRepository;
+        this.familyService = familyService;
     }
 
     @Transactional
     public Tribe createTribe(String name, String description) {
         Tribe tribe = new Tribe(name, description);
         
-        // Initialize resources
+        // Initialize resources (now mostly for backward compatibility)
         Resources resources = new Resources(100, 100);
         tribe.setResources(resources);
+        
+        // Initialize central storage if needed
+        tribe.setCentralStorage(new Resources(0, 0));
         
         // Initialize policy with default values
         Policy policy = new Policy("Default Policy", "Standard tribe policy", 10, 10, 5, 5);
@@ -42,12 +47,21 @@ public class TribeService {
         Person child = new Person("Child Alpha", Person.PersonRole.CHILD, 8, 100);
         Person elder = new Person("Elder Wise", Person.PersonRole.ELDER, 65, 80);
         
+        // Set initial skills based on role
+        hunter1.setHuntingSkill(0.6);
+        hunter2.setHuntingSkill(0.7);
+        gatherer1.setGatheringSkill(0.6);
+        gatherer2.setGatheringSkill(0.65);
+        
         tribe.addMember(hunter1);
         tribe.addMember(hunter2);
         tribe.addMember(gatherer1);
         tribe.addMember(gatherer2);
         tribe.addMember(child);
         tribe.addMember(elder);
+        
+        // Initialize families
+        familyService.initializeFamilies(tribe);
         
         return tribeRepository.save(tribe);
     }
@@ -60,55 +74,101 @@ public class TribeService {
         // Increment tick
         tribe.setCurrentTick(tribe.getCurrentTick() + 1);
         
-        // Hunters gather food
-        int foodGathered = 0;
-        int waterGathered = 0;
-        
+        // Phase 1: Gathering - resources go to family storage
         for (Person person : tribe.getMembers()) {
-            if (person.getRole() == Person.PersonRole.HUNTER && person.getHealth() > 30) {
+            if (person.getHealth() <= 30) continue; // Too weak to work
+            
+            int foodGathered = 0;
+            int waterGathered = 0;
+            
+            if (person.getRole() == Person.PersonRole.HUNTER) {
+                // Hunting - skill-based food gathering
                 int baseFood = 10 + random.nextInt(10);
+                double skillMultiplier = 1.0 + person.getHuntingSkill();
                 int incentive = tribe.getPolicy().getHuntingIncentive();
-                foodGathered += baseFood + incentive;
-            } else if (person.getRole() == Person.PersonRole.GATHERER && person.getHealth() > 30) {
+                foodGathered = (int) (baseFood * skillMultiplier) + incentive;
+                
+                // Improve hunting skill slightly on success
+                if (foodGathered > 15) {
+                    person.setHuntingSkill(Math.min(1.0, person.getHuntingSkill() + 0.01));
+                }
+            } else if (person.getRole() == Person.PersonRole.GATHERER) {
+                // Gathering - skill-based food and water gathering
                 int baseFood = 5 + random.nextInt(5);
                 int baseWater = 8 + random.nextInt(8);
+                double skillMultiplier = 1.0 + person.getGatheringSkill();
                 int incentive = tribe.getPolicy().getGatheringIncentive();
-                foodGathered += baseFood + incentive;
-                waterGathered += baseWater + incentive;
+                foodGathered = (int) (baseFood * skillMultiplier) + incentive;
+                waterGathered = (int) (baseWater * skillMultiplier) + incentive;
+                
+                // Improve gathering skill slightly on success
+                if (foodGathered > 7 || waterGathered > 10) {
+                    person.setGatheringSkill(Math.min(1.0, person.getGatheringSkill() + 0.01));
+                }
+            }
+            
+            // Add gathered resources to family storage (or central if no family)
+            if (person.getFamily() != null) {
+                Resources familyStorage = person.getFamily().getStorage();
+                
+                // Apply central storage tax if enabled
+                if (tribe.getPolicy().isEnableCentralStorage()) {
+                    int taxRate = tribe.getPolicy().getCentralStorageTaxRate();
+                    int foodTax = (foodGathered * taxRate) / 100;
+                    int waterTax = (waterGathered * taxRate) / 100;
+                    
+                    tribe.getCentralStorage().setFood(tribe.getCentralStorage().getFood() + foodTax);
+                    tribe.getCentralStorage().setWater(tribe.getCentralStorage().getWater() + waterTax);
+                    
+                    foodGathered -= foodTax;
+                    waterGathered -= waterTax;
+                }
+                
+                familyStorage.setFood(familyStorage.getFood() + foodGathered);
+                familyStorage.setWater(familyStorage.getWater() + waterGathered);
             }
         }
         
-        // Update resources with gathered amounts
-        Resources resources = tribe.getResources();
-        resources.setFood(resources.getFood() + foodGathered);
-        resources.setWater(resources.getWater() + waterGathered);
-        
-        // Apply taxes
-        int foodTax = (foodGathered * tribe.getPolicy().getFoodTaxRate()) / 100;
-        int waterTax = (waterGathered * tribe.getPolicy().getWaterTaxRate()) / 100;
-        resources.setFood(resources.getFood() - foodTax);
-        resources.setWater(resources.getWater() - waterTax);
-        
-        // Consume resources (each person needs food and water)
-        int totalMembers = tribe.getMembers().size();
-        int foodConsumed = totalMembers * 3;
-        int waterConsumed = totalMembers * 4;
-        
-        resources.setFood(Math.max(0, resources.getFood() - foodConsumed));
-        resources.setWater(Math.max(0, resources.getWater() - waterConsumed));
-        
-        // Update person health based on resource availability
-        for (Person person : tribe.getMembers()) {
-            if (resources.getFood() < 10 || resources.getWater() < 10) {
-                // Low resources - health decreases
-                person.setHealth(Math.max(0, person.getHealth() - 10));
-            } else if (person.getHealth() < 100) {
-                // Good resources - health recovers
-                person.setHealth(Math.min(100, person.getHealth() + 5));
-            }
+        // Phase 2: Family upkeep and sharing
+        for (Family family : tribe.getFamilies()) {
+            boolean hasSufficient = familyService.consumeFamilyResources(family);
             
-            // Age people
-            if (tribe.getCurrentTick() % 365 == 0) {
+            if (!hasSufficient) {
+                // Try to borrow from other families
+                int foodNeeded = family.getMembers().size() * 3;
+                int waterNeeded = family.getMembers().size() * 4;
+                boolean borrowed = familyService.borrowResources(family, tribe, foodNeeded, waterNeeded);
+                
+                // If borrowing failed, try central storage
+                if (!borrowed && tribe.getPolicy().isEnableCentralStorage()) {
+                    borrowed = familyService.accessCentralStorage(family, tribe, foodNeeded, waterNeeded);
+                }
+                
+                // If still insufficient, someone suffers
+                if (!borrowed) {
+                    Person toSuffer = familyService.selectMemberToSuffer(family, tribe.getPolicy());
+                    if (toSuffer != null) {
+                        toSuffer.setHealth(Math.max(0, toSuffer.getHealth() - 15));
+                    }
+                }
+            } else {
+                // Family has sufficient resources - members recover health slightly
+                for (Person person : family.getMembers()) {
+                    if (person.getHealth() < 100) {
+                        person.setHealth(Math.min(100, person.getHealth() + 5));
+                    }
+                }
+            }
+        }
+        
+        // Phase 3: Storage decay (periodic)
+        if (tribe.getCurrentTick() % tribe.getPolicy().getStorageDecayInterval() == 0) {
+            familyService.applyStorageDecay(tribe, tribe.getPolicy().getStorageDecayRate());
+        }
+        
+        // Phase 4: Aging and role transitions
+        if (tribe.getCurrentTick() % 365 == 0) {
+            for (Person person : tribe.getMembers()) {
                 person.setAge(person.getAge() + 1);
                 
                 // Update roles based on age
@@ -117,12 +177,28 @@ public class TribeService {
                 } else if (person.getAge() >= 16 && person.getAge() < 60 && person.getRole() == Person.PersonRole.CHILD) {
                     // Assign role based on random or need
                     person.setRole(random.nextBoolean() ? Person.PersonRole.HUNTER : Person.PersonRole.GATHERER);
+                    // Initialize appropriate skill
+                    if (person.getRole() == Person.PersonRole.HUNTER) {
+                        person.setHuntingSkill(0.5);
+                    } else {
+                        person.setGatheringSkill(0.5);
+                    }
                 }
             }
         }
         
-        // Remove deceased members (health = 0)
+        // Phase 5: Remove deceased members (health = 0)
         tribe.getMembers().removeIf(person -> person.getHealth() <= 0);
+        
+        // Update tribe resources for backward compatibility (sum of all family storage)
+        int totalFood = tribe.getFamilies().stream()
+            .mapToInt(f -> f.getStorage().getFood())
+            .sum();
+        int totalWater = tribe.getFamilies().stream()
+            .mapToInt(f -> f.getStorage().getWater())
+            .sum();
+        tribe.getResources().setFood(totalFood);
+        tribe.getResources().setWater(totalWater);
         
         tribeRepository.save(tribe);
         
@@ -189,6 +265,21 @@ public class TribeService {
         if (policyUpdate.getGatheringIncentive() != null) {
             policy.setGatheringIncentive(policyUpdate.getGatheringIncentive());
         }
+        if (policyUpdate.getSharingPriority() != null) {
+            policy.setSharingPriority(Policy.SharingPriority.valueOf(policyUpdate.getSharingPriority()));
+        }
+        if (policyUpdate.getEnableCentralStorage() != null) {
+            policy.setEnableCentralStorage(policyUpdate.getEnableCentralStorage());
+        }
+        if (policyUpdate.getCentralStorageTaxRate() != null) {
+            policy.setCentralStorageTaxRate(policyUpdate.getCentralStorageTaxRate());
+        }
+        if (policyUpdate.getStorageDecayRate() != null) {
+            policy.setStorageDecayRate(policyUpdate.getStorageDecayRate());
+        }
+        if (policyUpdate.getStorageDecayInterval() != null) {
+            policy.setStorageDecayInterval(policyUpdate.getStorageDecayInterval());
+        }
         
         tribeRepository.save(tribe);
         return convertToDTO(tribe);
@@ -200,10 +291,15 @@ public class TribeService {
         dto.setTribeName(tribe.getName());
         dto.setDescription(tribe.getDescription());
         dto.setCurrentTick(tribe.getCurrentTick());
+        dto.setBondLevel(tribe.getBondLevel());
         dto.setResources(new TribeStateDTO.ResourcesDTO(tribe.getResources()));
+        dto.setCentralStorage(new TribeStateDTO.ResourcesDTO(tribe.getCentralStorage()));
         dto.setPolicy(new TribeStateDTO.PolicyDTO(tribe.getPolicy()));
         dto.setMembers(tribe.getMembers().stream()
             .map(TribeStateDTO.PersonDTO::new)
+            .collect(Collectors.toList()));
+        dto.setFamilies(tribe.getFamilies().stream()
+            .map(TribeStateDTO.FamilyDTO::new)
             .collect(Collectors.toList()));
         return dto;
     }

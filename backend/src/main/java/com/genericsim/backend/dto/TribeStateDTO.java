@@ -1,5 +1,6 @@
 package com.genericsim.backend.dto;
 
+import com.genericsim.backend.model.Family;
 import com.genericsim.backend.model.Person;
 import com.genericsim.backend.model.Policy;
 import com.genericsim.backend.model.Resources;
@@ -12,9 +13,12 @@ public class TribeStateDTO {
     private String tribeName;
     private String description;
     private long currentTick;
+    private int bondLevel;
     private ResourcesDTO resources;
+    private ResourcesDTO centralStorage;
     private PolicyDTO policy;
     private List<PersonDTO> members;
+    private List<FamilyDTO> families;
 
     public static class ResourcesDTO {
         private int food;
@@ -40,6 +44,11 @@ public class TribeStateDTO {
         private int waterTaxRate;
         private int huntingIncentive;
         private int gatheringIncentive;
+        private String sharingPriority;
+        private boolean enableCentralStorage;
+        private int centralStorageTaxRate;
+        private double storageDecayRate;
+        private int storageDecayInterval;
 
         public PolicyDTO(Policy policy) {
             if (policy != null) {
@@ -49,6 +58,11 @@ public class TribeStateDTO {
                 this.waterTaxRate = policy.getWaterTaxRate();
                 this.huntingIncentive = policy.getHuntingIncentive();
                 this.gatheringIncentive = policy.getGatheringIncentive();
+                this.sharingPriority = policy.getSharingPriority().name();
+                this.enableCentralStorage = policy.isEnableCentralStorage();
+                this.centralStorageTaxRate = policy.getCentralStorageTaxRate();
+                this.storageDecayRate = policy.getStorageDecayRate();
+                this.storageDecayInterval = policy.getStorageDecayInterval();
             }
         }
 
@@ -64,6 +78,16 @@ public class TribeStateDTO {
         public void setHuntingIncentive(int huntingIncentive) { this.huntingIncentive = huntingIncentive; }
         public int getGatheringIncentive() { return gatheringIncentive; }
         public void setGatheringIncentive(int gatheringIncentive) { this.gatheringIncentive = gatheringIncentive; }
+        public String getSharingPriority() { return sharingPriority; }
+        public void setSharingPriority(String sharingPriority) { this.sharingPriority = sharingPriority; }
+        public boolean isEnableCentralStorage() { return enableCentralStorage; }
+        public void setEnableCentralStorage(boolean enableCentralStorage) { this.enableCentralStorage = enableCentralStorage; }
+        public int getCentralStorageTaxRate() { return centralStorageTaxRate; }
+        public void setCentralStorageTaxRate(int centralStorageTaxRate) { this.centralStorageTaxRate = centralStorageTaxRate; }
+        public double getStorageDecayRate() { return storageDecayRate; }
+        public void setStorageDecayRate(double storageDecayRate) { this.storageDecayRate = storageDecayRate; }
+        public int getStorageDecayInterval() { return storageDecayInterval; }
+        public void setStorageDecayInterval(int storageDecayInterval) { this.storageDecayInterval = storageDecayInterval; }
     }
 
     public static class PersonDTO {
@@ -72,6 +96,9 @@ public class TribeStateDTO {
         private String role;
         private int age;
         private int health;
+        private double huntingSkill;
+        private double gatheringSkill;
+        private Long familyId;
 
         public PersonDTO(Person person) {
             this.id = person.getId();
@@ -79,6 +106,9 @@ public class TribeStateDTO {
             this.role = person.getRole().toString();
             this.age = person.getAge();
             this.health = person.getHealth();
+            this.huntingSkill = person.getHuntingSkill();
+            this.gatheringSkill = person.getGatheringSkill();
+            this.familyId = person.getFamily() != null ? person.getFamily().getId() : null;
         }
 
         public Long getId() { return id; }
@@ -91,6 +121,35 @@ public class TribeStateDTO {
         public void setAge(int age) { this.age = age; }
         public int getHealth() { return health; }
         public void setHealth(int health) { this.health = health; }
+        public double getHuntingSkill() { return huntingSkill; }
+        public void setHuntingSkill(double huntingSkill) { this.huntingSkill = huntingSkill; }
+        public double getGatheringSkill() { return gatheringSkill; }
+        public void setGatheringSkill(double gatheringSkill) { this.gatheringSkill = gatheringSkill; }
+        public Long getFamilyId() { return familyId; }
+        public void setFamilyId(Long familyId) { this.familyId = familyId; }
+    }
+
+    public static class FamilyDTO {
+        private Long id;
+        private String name;
+        private ResourcesDTO storage;
+        private int memberCount;
+
+        public FamilyDTO(Family family) {
+            this.id = family.getId();
+            this.name = family.getName();
+            this.storage = new ResourcesDTO(family.getStorage());
+            this.memberCount = family.getMembers().size();
+        }
+
+        public Long getId() { return id; }
+        public void setId(Long id) { this.id = id; }
+        public String getName() { return name; }
+        public void setName(String name) { this.name = name; }
+        public ResourcesDTO getStorage() { return storage; }
+        public void setStorage(ResourcesDTO storage) { this.storage = storage; }
+        public int getMemberCount() { return memberCount; }
+        public void setMemberCount(int memberCount) { this.memberCount = memberCount; }
     }
 
     public TribeStateDTO() {
@@ -110,4 +169,10 @@ public class TribeStateDTO {
     public void setPolicy(PolicyDTO policy) { this.policy = policy; }
     public List<PersonDTO> getMembers() { return members; }
     public void setMembers(List<PersonDTO> members) { this.members = members; }
+    public int getBondLevel() { return bondLevel; }
+    public void setBondLevel(int bondLevel) { this.bondLevel = bondLevel; }
+    public ResourcesDTO getCentralStorage() { return centralStorage; }
+    public void setCentralStorage(ResourcesDTO centralStorage) { this.centralStorage = centralStorage; }
+    public List<FamilyDTO> getFamilies() { return families; }
+    public void setFamilies(List<FamilyDTO> families) { this.families = families; }
 }

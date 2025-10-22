@@ -23,9 +23,19 @@ public class Person {
     @Column(nullable = false)
     private int health;
 
+    @Column(nullable = false)
+    private double huntingSkill = 0.5;
+
+    @Column(nullable = false)
+    private double gatheringSkill = 0.5;
+
     @ManyToOne
     @JoinColumn(name = "tribe_id")
     private Tribe tribe;
+
+    @ManyToOne
+    @JoinColumn(name = "family_id")
+    private Family family;
 
     public enum PersonRole {
         HUNTER,
@@ -90,5 +100,29 @@ public class Person {
 
     public void setTribe(Tribe tribe) {
         this.tribe = tribe;
+    }
+
+    public Family getFamily() {
+        return family;
+    }
+
+    public void setFamily(Family family) {
+        this.family = family;
+    }
+
+    public double getHuntingSkill() {
+        return huntingSkill;
+    }
+
+    public void setHuntingSkill(double huntingSkill) {
+        this.huntingSkill = huntingSkill;
+    }
+
+    public double getGatheringSkill() {
+        return gatheringSkill;
+    }
+
+    public void setGatheringSkill(double gatheringSkill) {
+        this.gatheringSkill = gatheringSkill;
     }
 }
