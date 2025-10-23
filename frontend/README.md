@@ -7,9 +7,14 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 ## Features
 
 - **Dashboard**: View simulation statistics and recent activity
-- **Mock Data**: Currently displays static data for demonstration
+- **Tribe Statistics View**: Comprehensive display of tribe metrics including:
+  - Population overview and role distribution
+  - Health statistics (average, min, max, healthy members)
+  - Resource status with color-coded indicators (ABUNDANT, ADEQUATE, LOW, CRITICAL)
+  - Policy summary (tax rates and incentives)
+- **Tribe Selection**: Easy switching between multiple tribes
 - **API Service**: Pre-configured service layer for backend integration
-- **Responsive Design**: Modern, gradient-based UI design
+- **Responsive Design**: Modern, gradient-based UI that works on all devices
 
 ## Project Structure
 
@@ -20,7 +25,8 @@ frontend/
 │   ├── components/      # Reusable React components
 │   │   └── Header.js    # Navigation header
 │   ├── pages/           # Page-level components
-│   │   └── Dashboard.js # Main dashboard with statistics
+│   │   ├── Dashboard.js        # Main dashboard with statistics
+│   │   └── TribeStatistics.js  # Tribe statistics view
 │   ├── services/        # API service layer
 │   │   └── api.js       # Backend API calls
 │   ├── App.js           # Main app component
@@ -94,6 +100,36 @@ The `services/api.js` file includes:
 - `getSimulationStats()` - Fetch simulation statistics
 - `getSimulations()` - Fetch list of simulations
 - `checkHealth()` - Check backend health status
+- `getTribes()` - Fetch list of all tribes
+- `getTribeStatistics(tribeId)` - Fetch statistics for a specific tribe
+
+## Using the Tribe Statistics View
+
+1. Start the backend server (required):
+   ```bash
+   cd ../backend
+   mvn spring-boot:run
+   ```
+
+2. Create a tribe using the backend API:
+   ```bash
+   curl -X POST http://localhost:8080/api/tribes \
+     -H "Content-Type: application/json" \
+     -d '{"name":"Northern Tribe","description":"A resilient tribe"}'
+   ```
+
+3. Navigate to the "Tribe Statistics" tab in the frontend to view detailed metrics
+
+The statistics view displays:
+- **Population Overview**: Total population and current simulation day
+- **Role Distribution**: Count of hunters, gatherers, children, and elders
+- **Health Statistics**: Average, minimum, maximum health, and healthy member count
+- **Resource Status**: Color-coded indicator showing resource availability:
+  - 🟢 **ABUNDANT** (Green): 10+ food and water per person
+  - 🟡 **ADEQUATE** (Yellow): 5-9 food and water per person  
+  - 🟠 **LOW** (Orange): 3-4 food and water per person
+  - 🔴 **CRITICAL** (Red): Less than 3 food or water per person
+- **Policy Summary**: Current tax rates and incentives
 
 ## Next Steps
 

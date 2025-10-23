@@ -1,5 +1,5 @@
 // API service for backend communication
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL || '/api';
 
 /**
  * Fetch simulation statistics from the backend
@@ -48,6 +48,41 @@ export const checkHealth = async () => {
     return await response.json();
   } catch (error) {
     console.error('Error checking health:', error);
+    throw error;
+  }
+};
+
+/**
+ * Fetch all tribes
+ * @returns {Promise<Array>} List of tribes
+ */
+export const getTribes = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/tribes`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch tribes');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching tribes:', error);
+    throw error;
+  }
+};
+
+/**
+ * Fetch statistics for a specific tribe
+ * @param {number} tribeId - The ID of the tribe
+ * @returns {Promise<Object>} Tribe statistics
+ */
+export const getTribeStatistics = async (tribeId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/tribes/${tribeId}/statistics`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch tribe statistics');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching tribe statistics:', error);
     throw error;
   }
 };
