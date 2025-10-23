@@ -236,6 +236,23 @@ Retrieve aggregated statistics for a tribe in a frontend-friendly format.
 - `LOW` - 3-4 food and water per person
 - `CRITICAL` - Less than 3 food or water per person
 
+**Frontend Display:**
+
+The frontend provides a dedicated Tribe Statistics view that displays this data in a user-friendly format:
+
+1. **Tribe Selector**: Dropdown menu to select from available tribes
+2. **Population Overview**: Shows total population and current simulation day
+3. **Role Distribution**: Visual breakdown of hunters, gatherers, children, and elders
+4. **Health Statistics**: Displays average, minimum, maximum health, and count of healthy members (health ≥ 70)
+5. **Resource Status**: Color-coded badge indicating resource availability level:
+   - **Green (ABUNDANT)**: Plentiful resources, tribe is thriving
+   - **Yellow (ADEQUATE)**: Sufficient resources, tribe is stable  
+   - **Orange (LOW)**: Resources running low, action may be needed
+   - **Red (CRITICAL)**: Severe resource shortage, tribe at risk
+6. **Policy Summary**: Current tax rates and incentive settings
+
+The view automatically refreshes when switching between tribes and provides per-person resource calculations for easy assessment of tribe health.
+
 ---
 
 ### Update Tribe Policy

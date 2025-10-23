@@ -51,3 +51,38 @@ export const checkHealth = async () => {
     throw error;
   }
 };
+
+/**
+ * Fetch all tribes
+ * @returns {Promise<Array>} List of tribes
+ */
+export const getTribes = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/tribes`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch tribes');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching tribes:', error);
+    throw error;
+  }
+};
+
+/**
+ * Fetch statistics for a specific tribe
+ * @param {number} tribeId - The ID of the tribe
+ * @returns {Promise<Object>} Tribe statistics
+ */
+export const getTribeStatistics = async (tribeId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/tribes/${tribeId}/statistics`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch tribe statistics');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching tribe statistics:', error);
+    throw error;
+  }
+};
