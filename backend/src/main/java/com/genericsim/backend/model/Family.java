@@ -1,11 +1,18 @@
 package com.genericsim.backend.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "families")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Family {
 
     @Id
@@ -26,44 +33,9 @@ public class Family {
     @JoinColumn(name = "storage_id", referencedColumnName = "id")
     private Resources storage;
 
-    public Family() {
-    }
-
     public Family(String name) {
         this.name = name;
         this.storage = new Resources(0, 0);
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Tribe getTribe() {
-        return tribe;
-    }
-
-    public void setTribe(Tribe tribe) {
-        this.tribe = tribe;
-    }
-
-    public List<Person> getMembers() {
-        return members;
-    }
-
-    public void setMembers(List<Person> members) {
-        this.members = members;
     }
 
     public void addMember(Person person) {
@@ -76,11 +48,4 @@ public class Family {
         person.setFamily(null);
     }
 
-    public Resources getStorage() {
-        return storage;
-    }
-
-    public void setStorage(Resources storage) {
-        this.storage = storage;
-    }
 }
