@@ -257,7 +257,7 @@ The view automatically refreshes when switching between tribes and provides per-
 
 ### Update Tribe Policy
 
-Update the policy settings for a tribe (tax rates and incentives).
+Update the policy settings for a tribe. The frontend provides a Policy Management interface for making these changes.
 
 **Endpoint:** `PUT /tribes/{id}/policy`
 
@@ -265,21 +265,57 @@ Update the policy settings for a tribe (tax rates and incentives).
 - `id` (path) - The tribe ID
 
 **Request Body:**
+
+All fields are optional. Only provided fields will be updated (partial updates supported).
+
+**Available Policy Fields:**
+- `foodTaxRate` (integer, 0-100): Percentage of food collected as tax
+- `waterTaxRate` (integer, 0-100): Percentage of water collected as tax
+- `huntingIncentive` (integer, 0-100): Bonus resources for hunting activities
+- `gatheringIncentive` (integer, 0-100): Bonus resources for gathering activities
+- `sharingPriority` (string): Priority order for resource sharing
+  - Values: `ELDER`, `CHILD`, `HUNTER`, `GATHERER`, `YOUNGEST`, `RANDOM`
+- `enableCentralStorage` (boolean): Enable tribe-level central storage pool
+- `centralStorageTaxRate` (integer, 0-100): Additional tax for central storage
+- `storageDecayRate` (number, 0-1): Fraction of stored resources lost per decay interval
+- `storageDecayInterval` (integer, min 1): Days between each decay event
+
+**Example - Full Update:**
 ```json
 {
   "foodTaxRate": 15,
   "waterTaxRate": 20,
   "huntingIncentive": 8,
-  "gatheringIncentive": 10
+  "gatheringIncentive": 10,
+  "sharingPriority": "CHILD",
+  "enableCentralStorage": true,
+  "centralStorageTaxRate": 15,
+  "storageDecayRate": 0.05,
+  "storageDecayInterval": 30
 }
 ```
 
-**Note:** All fields are optional. Only provided fields will be updated.
-
-**Example - Partial Update:**
+**Example - Partial Update (Tax Rates Only):**
 ```json
 {
-  "huntingIncentive": 12
+  "foodTaxRate": 15,
+  "waterTaxRate": 20
+}
+```
+
+**Example - Enable Central Storage:**
+```json
+{
+  "enableCentralStorage": true,
+  "centralStorageTaxRate": 20
+}
+```
+
+**Example - Adjust Resource Decay:**
+```json
+{
+  "storageDecayRate": 0.15,
+  "storageDecayInterval": 10
 }
 ```
 
@@ -300,11 +336,35 @@ Update the policy settings for a tribe (tax rates and incentives).
     "foodTaxRate": 15,
     "waterTaxRate": 20,
     "huntingIncentive": 8,
-    "gatheringIncentive": 10
+    "gatheringIncentive": 10,
+    "sharingPriority": "CHILD",
+    "enableCentralStorage": true,
+    "centralStorageTaxRate": 15,
+    "storageDecayRate": 0.05,
+    "storageDecayInterval": 30
   },
   "members": [ ... ]
 }
 ```
+
+**Frontend Interface:**
+
+The Policy Management view in the frontend application provides a user-friendly interface for updating policies:
+
+1. **Navigate to Policy Management** from the main navigation menu
+2. **Select a tribe** from the dropdown selector
+3. **View current policy values** displayed alongside each field
+4. **Modify desired policy fields** - changed values are highlighted
+5. **Preview changes** before submitting
+6. **Submit updates** or reset to original values
+7. **Receive feedback** on success or validation errors
+
+The interface includes:
+- Input validation with range checks
+- Real-time change indicators
+- Descriptive field labels and hints
+- Organized sections: Tax Rates, Incentives, Sharing, Central Storage, and Decay
+- Ability to enable/disable central storage with dependent fields
 
 ---
 
@@ -367,11 +427,35 @@ curl http://localhost:8080/api/tribes/1
 curl http://localhost:8080/api/tribes/1/statistics
 ```
 
-### Update tribe policy:
+### Update tribe policy (partial update):
 ```bash
 curl -X PUT http://localhost:8080/api/tribes/1/policy \
   -H "Content-Type: application/json" \
   -d '{"foodTaxRate":15,"huntingIncentive":10}'
+```
+
+### Update tribe policy (full update with all fields):
+```bash
+curl -X PUT http://localhost:8080/api/tribes/1/policy \
+  -H "Content-Type: application/json" \
+  -d '{
+    "foodTaxRate": 15,
+    "waterTaxRate": 20,
+    "huntingIncentive": 8,
+    "gatheringIncentive": 10,
+    "sharingPriority": "CHILD",
+    "enableCentralStorage": true,
+    "centralStorageTaxRate": 15,
+    "storageDecayRate": 0.05,
+    "storageDecayInterval": 30
+  }'
+```
+
+### Enable central storage:
+```bash
+curl -X PUT http://localhost:8080/api/tribes/1/policy \
+  -H "Content-Type: application/json" \
+  -d '{"enableCentralStorage":true,"centralStorageTaxRate":20}'
 ```
 
 ### Process a tick:

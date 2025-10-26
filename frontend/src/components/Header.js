@@ -21,6 +21,13 @@ const Header = ({ currentView, setCurrentView }) => {
           >
             Tribe Statistics
           </a>
+          <a 
+            href="#policy" 
+            className={currentView === 'policy' ? 'active' : ''}
+            onClick={(e) => { e.preventDefault(); setCurrentView('policy'); }}
+          >
+            Policy Management
+          </a>
         </nav>
       </div>
     </header>
