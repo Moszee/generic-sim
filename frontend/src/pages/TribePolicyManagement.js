@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { getTribeState, getTribes, updateTribePolicy } from '../services/api';
 import './TribePolicyManagement.css';
 
@@ -18,7 +18,7 @@ const TribePolicyManagement = () => {
         const tribesData = await getTribes();
         setTribes(tribesData);
         // Auto-select first tribe if available
-        if (tribesData.length > 0 && !selectedTribeId) {
+        if (tribesData.length > 0) {
           setSelectedTribeId(tribesData[0].tribeId);
         }
       } catch (err) {
@@ -26,16 +26,9 @@ const TribePolicyManagement = () => {
       }
     };
     loadTribes();
-  }, [selectedTribeId]);
+  }, []);
 
-  // Load tribe state when a tribe is selected
-  useEffect(() => {
-    if (selectedTribeId) {
-      loadTribeState(selectedTribeId);
-    }
-  }, [selectedTribeId]);
-
-  const loadTribeState = async (tribeId) => {
+  const loadTribeState = useCallback(async (tribeId) => {
     setLoading(true);
     setError(null);
     setSuccessMessage(null);
@@ -59,7 +52,14 @@ const TribePolicyManagement = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  // Load tribe state when a tribe is selected
+  useEffect(() => {
+    if (selectedTribeId) {
+      loadTribeState(selectedTribeId);
+    }
+  }, [selectedTribeId, loadTribeState]);
 
   const handleTribeChange = (e) => {
     setSelectedTribeId(Number(e.target.value));
