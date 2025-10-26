@@ -1,5 +1,7 @@
 # API Guide - Hunter-Gatherer Tribe Simulation
 
+> **💡 New to the simulation?** Check out the **[Features Guide](Features-Guide.md)** for detailed information on tribe statistics, manual tick execution, and policy management with UI/UX details and usage examples.
+
 ## Base URL
 ```
 http://localhost:8080/api
@@ -491,3 +493,13 @@ Processing daily tick for all tribes
 Processed tick for tribe: Northern Tribe (ID: 1)
 Daily tick processing completed. Processed 2 tribes
 ```
+
+---
+
+## Related Documentation
+
+For more detailed information on using these features:
+
+- **[Features Guide](Features-Guide.md)** - Comprehensive guide covering tribe statistics display, manual tick execution workflows, and policy management with UI/UX details
+- **[Hunter-Gatherer Simulation](Hunter-Gatherer-Simulation.md)** - Deep dive into simulation mechanics and logic
+- **[Home](Home.md)** - Getting started and project overview

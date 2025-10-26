@@ -8,6 +8,7 @@ This project provides a flexible simulation engine with a Spring Boot backend an
 
 ## Quick Links
 
+- **[Features Guide](Features-Guide.md)** - Comprehensive guide to tribe statistics, tick execution, and policy management
 - **[Hunter-Gatherer Simulation](Hunter-Gatherer-Simulation.md)** - Detailed explanation of the simulation model and logic
 - **[API Guide](API-Guide.md)** - Complete REST API documentation with examples
 - **[Technical Architecture](Technical-Architecture.md)** - System architecture and technical details
