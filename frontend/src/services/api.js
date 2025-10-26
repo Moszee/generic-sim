@@ -86,3 +86,46 @@ export const getTribeStatistics = async (tribeId) => {
     throw error;
   }
 };
+
+/**
+ * Fetch full state for a specific tribe (includes policy details)
+ * @param {number} tribeId - The ID of the tribe
+ * @returns {Promise<Object>} Tribe state with full policy details
+ */
+export const getTribeState = async (tribeId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/tribes/${tribeId}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch tribe state');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching tribe state:', error);
+    throw error;
+  }
+};
+
+/**
+ * Update tribe policy settings
+ * @param {number} tribeId - The ID of the tribe
+ * @param {Object} policyUpdate - Policy fields to update (partial update supported)
+ * @returns {Promise<Object>} Updated tribe state
+ */
+export const updateTribePolicy = async (tribeId, policyUpdate) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/tribes/${tribeId}/policy`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(policyUpdate),
+    });
+    if (!response.ok) {
+      throw new Error('Failed to update tribe policy');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error updating tribe policy:', error);
+    throw error;
+  }
+};
