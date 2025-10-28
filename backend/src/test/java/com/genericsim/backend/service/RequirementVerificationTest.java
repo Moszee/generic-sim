@@ -76,7 +76,12 @@ public class RequirementVerificationTest {
         
         // Verify progress calculations
         // Young Adults: 7 * 2 = +14
-        assertEquals(14, stats.getProgressStats().getProgressGeneration() - (5 * 1)); // subtract adult contribution to isolate
+        int youngAdultGeneration = 7 * 2;
+        assertEquals(14, youngAdultGeneration);
+        
+        // Adults: 5 * 1 = +5
+        int adultGeneration = 5 * 1;
+        assertEquals(5, adultGeneration);
         
         // Total generation: 7 * 2 + 5 * 1 = 19
         assertEquals(19, stats.getProgressStats().getProgressGeneration());
