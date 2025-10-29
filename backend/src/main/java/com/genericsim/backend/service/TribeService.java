@@ -74,6 +74,10 @@ public class TribeService {
         // Increment tick
         tribe.setCurrentTick(tribe.getCurrentTick() + 1);
         
+        // Calculate elder count and bonuses for this tick
+        int elderCount = (int) countByAgeGroup(tribe, Person.AgeGroup.ELDER);
+        double elderGatheringBonus = 1.0 + (elderCount * 0.02); // 2% per elder
+        
         // Phase 1: Gathering - resources go to family storage
         for (Person person : tribe.getMembers()) {
             if (person.getHealth() <= 30) continue; // Too weak to work
@@ -86,7 +90,7 @@ public class TribeService {
                 int baseFood = 10 + random.nextInt(10);
                 double skillMultiplier = 1.0 + person.getHuntingSkill();
                 int incentive = tribe.getPolicy().getHuntingIncentive();
-                foodGathered = (int) (baseFood * skillMultiplier) + incentive;
+                foodGathered = (int) (baseFood * skillMultiplier * elderGatheringBonus) + incentive;
                 
                 // Improve hunting skill slightly on success
                 if (foodGathered > 15) {
@@ -98,8 +102,8 @@ public class TribeService {
                 int baseWater = 8 + random.nextInt(8);
                 double skillMultiplier = 1.0 + person.getGatheringSkill();
                 int incentive = tribe.getPolicy().getGatheringIncentive();
-                foodGathered = (int) (baseFood * skillMultiplier) + incentive;
-                waterGathered = (int) (baseWater * skillMultiplier) + incentive;
+                foodGathered = (int) (baseFood * skillMultiplier * elderGatheringBonus) + incentive;
+                waterGathered = (int) (baseWater * skillMultiplier * elderGatheringBonus) + incentive;
                 
                 // Improve gathering skill slightly on success
                 if (foodGathered > 7 || waterGathered > 10) {
@@ -187,7 +191,24 @@ public class TribeService {
             }
         }
         
-        // Phase 5: Remove deceased members (health = 0)
+        // Phase 5: Progress Points Calculation
+        int youngAdults = (int) countByAgeGroup(tribe, Person.AgeGroup.YOUNG_ADULT);
+        int adults = (int) countByAgeGroup(tribe, Person.AgeGroup.ADULT);
+        int elders = (int) countByAgeGroup(tribe, Person.AgeGroup.ELDER);
+        
+        // Progress generation by age group
+        int progressGenerated = (youngAdults * 2) + (adults * 1);
+        
+        // Base decay and elder preservation
+        int baseDecay = 30;
+        int elderPreservation = elders * 10;
+        int netDecay = Math.max(0, baseDecay - elderPreservation);
+        
+        // Update progress points
+        int newProgress = tribe.getProgressPoints() + progressGenerated - netDecay;
+        tribe.setProgressPoints(Math.max(0, newProgress));
+        
+        // Phase 6: Remove deceased members (health = 0)
         tribe.getMembers().removeIf(person -> person.getHealth() <= 0);
         
         // Update tribe resources for backward compatibility (sum of all family storage)
@@ -292,6 +313,7 @@ public class TribeService {
         dto.setDescription(tribe.getDescription());
         dto.setCurrentTick(tribe.getCurrentTick());
         dto.setBondLevel(tribe.getBondLevel());
+        dto.setProgressPoints(tribe.getProgressPoints());
         dto.setResources(new TribeStateDTO.ResourcesDTO(tribe.getResources()));
         dto.setCentralStorage(new TribeStateDTO.ResourcesDTO(tribe.getCentralStorage()));
         dto.setPolicy(new TribeStateDTO.PolicyDTO(tribe.getPolicy()));
@@ -302,5 +324,11 @@ public class TribeService {
             .map(TribeStateDTO.FamilyDTO::new)
             .collect(Collectors.toList()));
         return dto;
+    }
+
+    private long countByAgeGroup(Tribe tribe, Person.AgeGroup ageGroup) {
+        return tribe.getMembers().stream()
+            .filter(person -> person.getAgeGroup() == ageGroup)
+            .count();
     }
 }

@@ -31,6 +31,9 @@ public class Tribe {
     @Column(nullable = false)
     private int bondLevel = 50;
 
+    @Column(nullable = false)
+    private int progressPoints = 0;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "resources_id", referencedColumnName = "id")
     private Resources resources;

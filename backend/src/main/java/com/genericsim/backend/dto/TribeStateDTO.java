@@ -19,6 +19,7 @@ public class TribeStateDTO {
     private String description;
     private long currentTick;
     private int bondLevel;
+    private int progressPoints;
     private ResourcesDTO resources;
     private ResourcesDTO centralStorage;
     private PolicyDTO policy;

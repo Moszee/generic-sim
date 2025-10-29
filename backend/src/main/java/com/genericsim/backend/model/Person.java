@@ -50,11 +50,47 @@ public class Person {
         ELDER
     }
 
+    public enum AgeGroup {
+        CHILD(0, 15),
+        YOUNG_ADULT(16, 40),
+        ADULT(41, 59),
+        ELDER(60, Integer.MAX_VALUE);
+
+        private final int minAge;
+        private final int maxAge;
+
+        AgeGroup(int minAge, int maxAge) {
+            this.minAge = minAge;
+            this.maxAge = maxAge;
+        }
+
+        public int getMinAge() {
+            return minAge;
+        }
+
+        public int getMaxAge() {
+            return maxAge;
+        }
+
+        public static AgeGroup fromAge(int age) {
+            for (AgeGroup group : values()) {
+                if (age >= group.minAge && age <= group.maxAge) {
+                    return group;
+                }
+            }
+            return CHILD; // Default fallback
+        }
+    }
+
     public Person(String name, PersonRole role, int age, int health) {
         this.name = name;
         this.role = role;
         this.age = age;
         this.health = health;
+    }
+
+    public AgeGroup getAgeGroup() {
+        return AgeGroup.fromAge(this.age);
     }
 
 }

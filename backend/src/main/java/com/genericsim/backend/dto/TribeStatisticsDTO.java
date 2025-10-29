@@ -26,10 +26,14 @@ public class TribeStatisticsDTO {
     // Population statistics
     private int totalPopulation;
     private RoleBreakdown roleBreakdown;
+    private AgeGroupBreakdown ageGroupBreakdown;
     private HealthStats healthStats;
     
     // Resource statistics
     private ResourceStats resourceStats;
+    
+    // Progress statistics
+    private ProgressStats progressStats;
     
     // Policy information
     private PolicySummary policySummary;
@@ -53,6 +57,28 @@ public class TribeStatisticsDTO {
             this.gatherers = roleCounts.getOrDefault(Person.PersonRole.GATHERER, 0L).intValue();
             this.children = roleCounts.getOrDefault(Person.PersonRole.CHILD, 0L).intValue();
             this.elders = roleCounts.getOrDefault(Person.PersonRole.ELDER, 0L).intValue();
+        }
+    }
+    
+    /**
+     * Age group breakdown showing count of members per age group
+     */
+    @Getter
+    @Setter
+    public static class AgeGroupBreakdown {
+        private int children;
+        private int youngAdults;
+        private int adults;
+        private int elders;
+        
+        public AgeGroupBreakdown(List<Person> members) {
+            Map<Person.AgeGroup, Long> ageCounts = members.stream()
+                .collect(Collectors.groupingBy(Person::getAgeGroup, Collectors.counting()));
+            
+            this.children = ageCounts.getOrDefault(Person.AgeGroup.CHILD, 0L).intValue();
+            this.youngAdults = ageCounts.getOrDefault(Person.AgeGroup.YOUNG_ADULT, 0L).intValue();
+            this.adults = ageCounts.getOrDefault(Person.AgeGroup.ADULT, 0L).intValue();
+            this.elders = ageCounts.getOrDefault(Person.AgeGroup.ELDER, 0L).intValue();
         }
     }
     
@@ -143,6 +169,30 @@ public class TribeStatisticsDTO {
     }
     
     /**
+     * Progress statistics
+     */
+    @Getter
+    @Setter
+    public static class ProgressStats {
+        private int currentProgress;
+        private int progressGeneration;
+        private int progressDecay;
+        private int elderPreservation;
+        private int netProgressPerTick;
+        private double elderGatheringBonus;
+        
+        public ProgressStats(int currentProgress, int youngAdults, int adults, int elders) {
+            this.currentProgress = currentProgress;
+            this.progressGeneration = (youngAdults * 2) + (adults * 1);
+            int baseDecay = 30;
+            this.elderPreservation = elders * 10;
+            this.progressDecay = Math.max(0, baseDecay - this.elderPreservation);
+            this.netProgressPerTick = this.progressGeneration - this.progressDecay;
+            this.elderGatheringBonus = elders * 2.0; // percentage
+        }
+    }
+    
+    /**
      * Constructs statistics DTO from a Tribe entity
      */
     public TribeStatisticsDTO(Tribe tribe) {
@@ -151,6 +201,7 @@ public class TribeStatisticsDTO {
         this.currentTick = tribe.getCurrentTick();
         this.totalPopulation = tribe.getMembers().size();
         this.roleBreakdown = new RoleBreakdown(tribe.getMembers());
+        this.ageGroupBreakdown = new AgeGroupBreakdown(tribe.getMembers());
         this.healthStats = new HealthStats(tribe.getMembers());
         this.resourceStats = new ResourceStats(
             tribe.getResources() != null ? tribe.getResources().getFood() : 0,
@@ -163,5 +214,11 @@ public class TribeStatisticsDTO {
             tribe.getPolicy().getHuntingIncentive(),
             tribe.getPolicy().getGatheringIncentive()
         ) : null;
+        this.progressStats = new ProgressStats(
+            tribe.getProgressPoints(),
+            this.ageGroupBreakdown.getYoungAdults(),
+            this.ageGroupBreakdown.getAdults(),
+            this.ageGroupBreakdown.getElders()
+        );
     }
 }
