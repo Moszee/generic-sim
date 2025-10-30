@@ -129,28 +129,32 @@ public class MyCustomEffect implements PolicyEffect {
 }
 ```
 
-### Step 2: Register the Effect
+### Step 2: Registration is Automatic!
 
-Add your effect to `PolicyEngineConfiguration`:
+Your effect will be **automatically discovered and registered** by Spring when marked with `@Component`. The `PolicyEngineConfiguration` class uses Spring's dependency injection to collect all `PolicyEffect` beans and register them at startup.
+
+**No manual registration needed!** Just ensure your effect class:
+1. Implements `PolicyEffect`
+2. Is annotated with `@Component` (or other Spring stereotype annotations)
+3. Is in a package scanned by Spring (under `com.genericsim.backend`)
+
+The configuration automatically handles this:
 
 ```java
 @Configuration
 public class PolicyEngineConfiguration {
-    
-    private final PolicyEngine policyEngine;
-    private final MyCustomEffect myCustomEffect;
-    
     public PolicyEngineConfiguration(
             PolicyEngine policyEngine,
-            MyCustomEffect myCustomEffect) {
-        this.policyEngine = policyEngine;
-        this.myCustomEffect = myCustomEffect;
+            List<PolicyEffect> policyEffects) {
+        // Spring injects ALL PolicyEffect beans automatically
     }
     
     @PostConstruct
     public void registerEffects() {
-        policyEngine.registerEffect(myCustomEffect);
-        // ... register other effects
+        // All effects are registered in a loop
+        for (PolicyEffect effect : policyEffects) {
+            policyEngine.registerEffect(effect);
+        }
     }
 }
 ```

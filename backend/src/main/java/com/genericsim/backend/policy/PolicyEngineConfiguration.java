@@ -1,37 +1,41 @@
 package com.genericsim.backend.policy;
 
-import com.genericsim.backend.policy.effects.CentralStorageTaxEffect;
-import com.genericsim.backend.policy.effects.StorageDecayEffect;
 import org.springframework.context.annotation.Configuration;
 
 import jakarta.annotation.PostConstruct;
+import java.util.List;
 
 /**
  * Configuration for the policy engine.
- * Registers all policy effects at application startup.
+ * Automatically discovers and registers all policy effects at application startup.
  */
 @Configuration
 public class PolicyEngineConfiguration {
     
     private final PolicyEngine policyEngine;
-    private final CentralStorageTaxEffect centralStorageTaxEffect;
-    private final StorageDecayEffect storageDecayEffect;
+    private final List<PolicyEffect> policyEffects;
     
+    /**
+     * Spring automatically injects all PolicyEffect beans into the list.
+     * 
+     * @param policyEngine the policy engine
+     * @param policyEffects all PolicyEffect beans discovered by Spring
+     */
     public PolicyEngineConfiguration(
             PolicyEngine policyEngine,
-            CentralStorageTaxEffect centralStorageTaxEffect,
-            StorageDecayEffect storageDecayEffect) {
+            List<PolicyEffect> policyEffects) {
         this.policyEngine = policyEngine;
-        this.centralStorageTaxEffect = centralStorageTaxEffect;
-        this.storageDecayEffect = storageDecayEffect;
+        this.policyEffects = policyEffects;
     }
     
     /**
-     * Register all policy effects with the engine after construction.
+     * Register all discovered policy effects with the engine after construction.
+     * New effects added as @Component classes will be automatically registered.
      */
     @PostConstruct
     public void registerEffects() {
-        policyEngine.registerEffect(centralStorageTaxEffect);
-        policyEngine.registerEffect(storageDecayEffect);
+        for (PolicyEffect effect : policyEffects) {
+            policyEngine.registerEffect(effect);
+        }
     }
 }
