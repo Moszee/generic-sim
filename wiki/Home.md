@@ -12,6 +12,7 @@ This project provides a flexible simulation engine with a Spring Boot backend an
 - **[Hunter-Gatherer Simulation](Hunter-Gatherer-Simulation.md)** - Detailed explanation of the simulation model and logic
 - **[API Guide](API-Guide.md)** - Complete REST API documentation with examples
 - **[Technical Architecture](Technical-Architecture.md)** - System architecture and technical details
+- **[Policy Engine Guide](Policy-Engine-Guide.md)** - Developer guide for extending the policy system
 
 ## Getting Started
 

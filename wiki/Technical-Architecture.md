@@ -82,13 +82,21 @@ The Generic Simulation system follows a three-tier architecture:
 - Core business logic for tribe simulation
 - Implements tick processing algorithm:
   1. Resource gathering by role
-  2. Tax application
+  2. Policy engine execution (taxes, decay, etc.)
   3. Resource consumption
   4. Health updates
   5. Aging mechanics
   6. Death processing
 - DTO conversion for API responses
 - Transaction management with `@Transactional`
+- Integrates with PolicyEngine for extensible policy execution
+
+**PolicyEngine:**
+- Manages registration and execution of policy effects
+- Organizes effects by phase and priority
+- Efficient filtering via `shouldApply()` predicate
+- Self-contained policy logic in separate effect classes
+- See [Policy Engine Guide](Policy-Engine-Guide.md) for details
 
 **SimulationService:**
 - Generic simulation operations (future expansion)
