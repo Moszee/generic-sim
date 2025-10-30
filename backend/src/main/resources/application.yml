@@ -1,0 +1,129 @@
+# Simulation Resources and Coefficients Configuration
+simulation:
+  # Resources - tangible items that can be gathered, stored, and consumed
+  resources:
+    - id: "food"
+      type: "resource"
+      name: "Jedzenie"
+      min: 0
+      max: 10000
+      defaultValue: 100
+      production:
+        gathering: 1.0
+        farming: 2.0
+      consumption:
+        family: 3.0
+        event: 1.0
+      decayRate: 0.1
+      storageCapacity: 1000
+      weight: 1.0
+      renewable: true
+      description: "Basic sustenance for survival"
+      
+    - id: "water"
+      type: "resource"
+      name: "Woda"
+      min: 0
+      max: 10000
+      defaultValue: 100
+      production:
+        gathering: 1.0
+      consumption:
+        family: 4.0
+        event: 1.0
+      decayRate: 0.05
+      storageCapacity: 1000
+      weight: 1.0
+      renewable: true
+      description: "Essential liquid for hydration"
+      
+    - id: "stone"
+      type: "resource"
+      name: "Kamień"
+      min: 0
+      max: 5000
+      defaultValue: 0
+      production:
+        gathering: 0.5
+      consumption: {}
+      decayRate: 0.0
+      storageCapacity: 500
+      weight: 2.0
+      renewable: true
+      description: "Basic building and tool material"
+      
+    - id: "wood"
+      type: "resource"
+      name: "Drewno"
+      min: 0
+      max: 5000
+      defaultValue: 0
+      production:
+        gathering: 0.8
+      consumption: {}
+      decayRate: 0.02
+      storageCapacity: 500
+      weight: 1.5
+      renewable: true
+      description: "Basic construction and fuel material"
+  
+  # Coefficients - abstract metrics representing community state
+  coefficients:
+    - id: "stability"
+      type: "coefficient"
+      name: "Stabilność"
+      min: 0
+      max: 1
+      defaultValue: 0.5
+      production: {}
+      consumption: {}
+      affects: {}
+      description: "Overall stability and order of the community"
+      
+    - id: "morale"
+      type: "coefficient"
+      name: "Morale"
+      min: 0
+      max: 1
+      defaultValue: 0.5
+      production: {}
+      consumption: {}
+      affects:
+        stability: 0.2
+      description: "Spirit and motivation of the community"
+      
+    - id: "cohesion"
+      type: "coefficient"
+      name: "Spójność"
+      min: 0
+      max: 1
+      defaultValue: 0.5
+      production: {}
+      consumption: {}
+      affects:
+        morale: 0.1
+        stability: 0.15
+      description: "Unity and cooperation within the community"
+      
+    - id: "demand"
+      type: "coefficient"
+      name: "Zapotrzebowanie"
+      min: 0
+      max: 100
+      defaultValue: 10
+      production: {}
+      consumption: {}
+      affects: {}
+      description: "Current needs and demands of the community"
+      
+    - id: "technology"
+      type: "coefficient"
+      name: "Technologia"
+      min: 0
+      max: 100
+      defaultValue: 0
+      production: {}
+      consumption: {}
+      affects:
+        stability: 0.1
+      description: "Technological advancement level"
