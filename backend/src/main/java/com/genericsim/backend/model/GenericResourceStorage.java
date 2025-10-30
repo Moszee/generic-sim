@@ -31,7 +31,7 @@ public class GenericResourceStorage {
     @CollectionTable(name = "generic_resource_storage_values",
                      joinColumns = @JoinColumn(name = "storage_id"))
     @MapKeyColumn(name = "resource_id")
-    @Column(name = "value")
+    @Column(name = "amount")
     private Map<String, Double> values = new HashMap<>();
     
     /**
