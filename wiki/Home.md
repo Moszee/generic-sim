@@ -10,6 +10,7 @@ This project provides a flexible simulation engine with a Spring Boot backend an
 
 - **[Features Guide](Features-Guide.md)** - Comprehensive guide to tribe statistics, tick execution, and policy management
 - **[Hunter-Gatherer Simulation](Hunter-Gatherer-Simulation.md)** - Detailed explanation of the simulation model and logic
+- **[Generic Model Guide](Generic-Model-Guide.md)** - Guide to the extensible resource, technology, and lifestyle system
 - **[API Guide](API-Guide.md)** - Complete REST API documentation with examples
 - **[Technical Architecture](Technical-Architecture.md)** - System architecture and technical details
 - **[Policy Engine Guide](Policy-Engine-Guide.md)** - Developer guide for extending the policy system
@@ -83,20 +84,23 @@ curl http://localhost:8080/api/tribes/1
 
 ### Current Features
 - ✅ Hunter-gatherer tribe simulation
-- ✅ Resource management (food and water)
+- ✅ Generic resource system (food, water, stone, wood)
+- ✅ Technology system (fire, stone tools, agriculture, animal husbandry)
+- ✅ Lifestyle progression (hunter-gatherer → nomadic/settled)
+- ✅ Flexible model allowing easy addition of new resources and technologies
 - ✅ Population dynamics with roles (Hunter, Gatherer, Child, Elder)
 - ✅ Health system
 - ✅ Policy-based governance (taxes and incentives)
 - ✅ Automated daily ticks
 - ✅ REST API for simulation control
 - ✅ H2 in-memory database
-- ✅ Unit tests for core functionality
+- ✅ 91 unit tests covering all functionality
 
 ### Planned Features
 - 🔲 Birth and reproduction mechanics
 - 🔲 Random events (droughts, abundant seasons)
 - 🔲 Inter-tribe interactions
-- 🔲 Technology development
+- 🔲 Resource transformation and crafting
 - 🔲 Enhanced frontend visualization
 - 🔲 Historical data and analytics
 
@@ -135,7 +139,7 @@ mvn test
 
 All tests should pass:
 ```
-Tests run: 10, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 91, Failures: 0, Errors: 0, Skipped: 0
 ```
 
 ## Database

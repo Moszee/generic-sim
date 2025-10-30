@@ -40,6 +40,21 @@ public class TribeService {
         // Initialize central storage if needed
         tribe.setCentralStorage(new Resources(0, 0));
         
+        // Initialize generic resource storage
+        ResourceStorage genericStorage = new ResourceStorage();
+        genericStorage.initializeDefaults();
+        genericStorage.setAmount(ResourceType.FOOD, 100);
+        genericStorage.setAmount(ResourceType.WATER, 100);
+        tribe.setGenericStorage(genericStorage);
+        
+        // Initialize generic central storage
+        ResourceStorage genericCentralStorage = new ResourceStorage();
+        genericCentralStorage.initializeDefaults();
+        tribe.setGenericCentralStorage(genericCentralStorage);
+        
+        // Set default lifestyle
+        tribe.setLifestyle(LifestyleType.HUNTER_GATHERER);
+        
         // Initialize policy with default values
         Policy policy = new Policy("Default Policy", "Standard tribe policy", 10, 10, 5, 5);
         tribe.setPolicy(policy);
