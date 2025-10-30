@@ -59,6 +59,41 @@ mvn spring-boot:run
 
 The application will start on `http://localhost:8080`
 
+## Flexible Resource and Coefficient System
+
+The simulation now supports a **fully flexible and extensible model** for resources and coefficients. Instead of hardcoding resource types in Java enums, all resources and coefficients are defined in YAML configuration files.
+
+### Key Features
+
+- ✅ **No code changes required** - Add new resources/coefficients by editing YAML
+- ✅ **Support for both resources and coefficients** - Manage tangible resources (food, water) and abstract metrics (stability, morale)
+- ✅ **Full configurability** - Control min/max values, production/consumption rates, and effects
+- ✅ **Export/Import capability** - Save and restore simulation state as JSON
+- ✅ **AI-ready** - Dependencies can be calculated by AI layer based on state snapshots
+
+### Documentation
+
+- 📖 **[Resource Configuration Guide](./RESOURCE_CONFIGURATION.md)** - Complete documentation of the configuration format
+- 📖 **[Adding New Resource Example](./ADDING_NEW_RESOURCE_EXAMPLE.md)** - Step-by-step guide with examples
+
+### Quick Example
+
+Add a new resource by editing `src/main/resources/application.yml`:
+
+```yaml
+simulation:
+  resources:
+    - id: "metal"
+      name: "Metal"
+      type: "resource"
+      min: 0
+      max: 1000
+      defaultValue: 0
+      description: "Advanced material for tools"
+```
+
+That's it! No Java code changes needed. The new resource is immediately available after restart.
+
 ## API Endpoints
 
 ### Health Check
@@ -72,6 +107,22 @@ The application will start on `http://localhost:8080`
     "message": "Generic Simulation Backend is running"
   }
   ```
+
+### Resource Configuration
+
+- **Endpoint:** `GET /api/config`
+- **Description:** Get all resource and coefficient configurations
+- **Response:** Map of all configurations
+
+- **Endpoint:** `GET /api/config/{id}`
+- **Description:** Get a specific resource or coefficient configuration by ID
+- **Example:** `GET /api/config/food`
+
+- **Endpoint:** `GET /api/config/resources`
+- **Description:** Get all resource configurations
+
+- **Endpoint:** `GET /api/config/coefficients`
+- **Description:** Get all coefficient configurations
 
 ### H2 Console (Development Only)
 
