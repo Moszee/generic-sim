@@ -47,15 +47,20 @@ mvn spring-boot:run
 Test via REST API:
 
 ```bash
-# Get all resources
+# Get all resources (using jq for pretty-printing, optional)
 curl http://localhost:8080/api/config/resources | jq 'keys'
 
 # Should now include "metal" in the list:
 # ["food", "metal", "stone", "water", "wood"]
 
-# Get metal configuration
+# Get metal configuration (with jq for formatting)
 curl http://localhost:8080/api/config/metal | jq .
+
+# Or without jq:
+curl http://localhost:8080/api/config/metal
 ```
+
+> **Note:** The examples use `jq` for JSON formatting. If you don't have `jq` installed, you can omit it or install it via your package manager (`apt install jq`, `brew install jq`, etc.).
 
 Expected output:
 ```json
@@ -324,7 +329,9 @@ void testMetalStorage() {
 
 ## Best Practices
 
-1. **Choose meaningful IDs** - Use lowercase with underscores: `advanced_tools`, `social_cohesion`
+1. **Choose meaningful IDs** - Use simple lowercase IDs: `metal`, `innovation`, `clay`, `pottery`
+   - For multi-word IDs, you can use underscores if needed: `advanced_tools`, `social_cohesion`
+   - Keep IDs short and memorable
 2. **Set appropriate ranges** - Resources: 0-10000, Coefficients: 0-1
 3. **Document thoroughly** - Always include clear descriptions
 4. **Define relationships** - Use `affects` to model dependencies

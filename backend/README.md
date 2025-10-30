@@ -73,8 +73,8 @@ The simulation now supports a **fully flexible and extensible model** for resour
 
 ### Documentation
 
-- 📖 **[Resource Configuration Guide](RESOURCE_CONFIGURATION.md)** - Complete documentation of the configuration format
-- 📖 **[Adding New Resource Example](ADDING_NEW_RESOURCE_EXAMPLE.md)** - Step-by-step guide with examples
+- 📖 **[Resource Configuration Guide](./RESOURCE_CONFIGURATION.md)** - Complete documentation of the configuration format
+- 📖 **[Adding New Resource Example](./ADDING_NEW_RESOURCE_EXAMPLE.md)** - Step-by-step guide with examples
 
 ### Quick Example
 
