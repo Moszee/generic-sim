@@ -27,7 +27,7 @@ public class StorageDecayEffectTest {
 
     @Test
     public void testPhaseAndPriority() {
-        assertEquals(PolicyPhase.STORAGE_DECAY, effect.getPhase());
+        assertEquals(PolicyPhase.RESOURCE_DECAY, effect.getPhase());
         assertEquals(100, effect.getPriority());
     }
 

@@ -3,47 +3,57 @@ package com.genericsim.backend.policy;
 /**
  * Enumeration of simulation phases where policy effects can be applied.
  * Each phase represents a distinct point in the tick processing lifecycle.
+ * 
+ * These generic phases are designed to be applicable across different simulation types,
+ * not just hunter-gatherer tribes.
  */
 public enum PolicyPhase {
     /**
-     * Resource gathering phase - when tribe members collect food and water.
-     * Effects here can modify gathering rates, apply taxes, or adjust incentives.
+     * Resource collection phase - when entities gather or acquire resources.
+     * Effects here can modify collection rates, apply taxes, or adjust incentives.
+     * Examples: hunting, gathering, mining, harvesting, scavenging.
      */
-    GATHERING,
+    RESOURCE_COLLECTION,
     
     /**
-     * Post-gathering phase - after resources are collected but before consumption.
-     * Effects here can process collected resources (e.g., central storage taxation).
+     * Production phase - when entities create or transform resources into goods.
+     * Effects here can modify production rates, efficiency, or output quality.
+     * Examples: crafting, manufacturing, processing, refining.
      */
-    POST_GATHERING,
+    PRODUCTION,
     
     /**
-     * Family upkeep phase - when families consume resources for daily needs.
-     * Effects here can modify consumption rates or resource sharing behavior.
+     * Upkeep phase - when entities consume resources for maintenance and daily needs.
+     * Effects here can modify consumption rates, sharing behavior, or resource allocation.
+     * Examples: eating, drinking, shelter maintenance, tool upkeep.
      */
-    FAMILY_UPKEEP,
+    UPKEEP,
     
     /**
-     * Storage decay phase - periodic spoilage of stored resources.
-     * Effects here apply decay rules to family and central storage.
+     * Resource decay phase - periodic degradation or spoilage of stored resources.
+     * Effects here apply decay rules to various storage types.
+     * Examples: food spoilage, material degradation, tool wear.
      */
-    STORAGE_DECAY,
+    RESOURCE_DECAY,
     
     /**
-     * Aging and role transition phase - annual age advancement and role changes.
-     * Effects here can modify aging rates or role transition rules.
+     * Population progress phase - individual entity advancement and changes.
+     * Effects here can modify aging, skill development, role transitions, or health changes.
+     * Examples: aging, profession changes, skill learning, promotions.
      */
-    AGING,
+    POPULATION_PROGRESS,
     
     /**
-     * Progress calculation phase - computing progress points for technology/culture.
-     * Effects here can modify progress generation or decay rates.
+     * Society progress phase - collective advancement in culture, technology, and organization.
+     * Effects here can modify research, cultural development, or societal evolution.
+     * Examples: technology research, cultural milestones, organizational improvements.
      */
-    PROGRESS_CALCULATION,
+    SOCIETY_PROGRESS,
     
     /**
-     * Cleanup phase - removal of deceased members and final state updates.
-     * Effects here handle end-of-tick cleanup and state reconciliation.
+     * Cleanup phase - removal of invalid entities and final state reconciliation.
+     * Effects here handle end-of-tick cleanup and state consistency.
+     * Examples: removing deceased entities, garbage collection, state validation.
      */
     CLEANUP
 }

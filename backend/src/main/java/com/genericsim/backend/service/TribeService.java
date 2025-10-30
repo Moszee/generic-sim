@@ -134,8 +134,8 @@ public class TribeService {
             }
         }
         
-        // Execute policy engine for post-gathering phase (e.g., central storage tax)
-        policyEngine.executePhase(PolicyPhase.POST_GATHERING, context);
+        // Execute policy engine for production phase (e.g., central storage tax)
+        policyEngine.executePhase(PolicyPhase.PRODUCTION, context);
         
         // Phase 2: Family upkeep and sharing
         for (Family family : tribe.getFamilies()) {
@@ -169,8 +169,8 @@ public class TribeService {
             }
         }
         
-        // Execute policy engine for storage decay phase
-        policyEngine.executePhase(PolicyPhase.STORAGE_DECAY, context);
+        // Execute policy engine for resource decay phase
+        policyEngine.executePhase(PolicyPhase.RESOURCE_DECAY, context);
         
         // Phase 4: Aging and role transitions
         if (tribe.getCurrentTick() % 365 == 0) {

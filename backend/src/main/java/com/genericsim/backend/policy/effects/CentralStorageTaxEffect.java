@@ -14,15 +14,15 @@ import org.springframework.stereotype.Component;
  * When central storage is enabled, this effect taxes a percentage of all
  * resources gathered by tribe members and deposits them into the central pool.
  * 
- * This executes during POST_GATHERING phase, after resources have been collected
- * but before families consume them.
+ * This executes during PRODUCTION phase, after resources have been collected
+ * but before upkeep consumption.
  */
 @Component
 public class CentralStorageTaxEffect implements PolicyEffect {
     
     @Override
     public PolicyPhase getPhase() {
-        return PolicyPhase.POST_GATHERING;
+        return PolicyPhase.PRODUCTION;
     }
     
     @Override

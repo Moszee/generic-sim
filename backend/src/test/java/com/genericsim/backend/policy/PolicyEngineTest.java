@@ -27,26 +27,26 @@ public class PolicyEngineTest {
 
     @Test
     public void testRegisterEffect() {
-        TestEffect effect = new TestEffect(PolicyPhase.GATHERING, 100);
+        TestEffect effect = new TestEffect(PolicyPhase.RESOURCE_COLLECTION, 100);
         policyEngine.registerEffect(effect);
 
         assertEquals(1, policyEngine.getEffectCount());
-        List<PolicyEffect> gatheringEffects = policyEngine.getEffectsForPhase(PolicyPhase.GATHERING);
-        assertEquals(1, gatheringEffects.size());
-        assertEquals(effect, gatheringEffects.get(0));
+        List<PolicyEffect> collectionEffects = policyEngine.getEffectsForPhase(PolicyPhase.RESOURCE_COLLECTION);
+        assertEquals(1, collectionEffects.size());
+        assertEquals(effect, collectionEffects.get(0));
     }
 
     @Test
     public void testEffectPrioritySorting() {
-        TestEffect effect1 = new TestEffect(PolicyPhase.GATHERING, 200);
-        TestEffect effect2 = new TestEffect(PolicyPhase.GATHERING, 100);
-        TestEffect effect3 = new TestEffect(PolicyPhase.GATHERING, 150);
+        TestEffect effect1 = new TestEffect(PolicyPhase.RESOURCE_COLLECTION, 200);
+        TestEffect effect2 = new TestEffect(PolicyPhase.RESOURCE_COLLECTION, 100);
+        TestEffect effect3 = new TestEffect(PolicyPhase.RESOURCE_COLLECTION, 150);
 
         policyEngine.registerEffect(effect1);
         policyEngine.registerEffect(effect2);
         policyEngine.registerEffect(effect3);
 
-        List<PolicyEffect> effects = policyEngine.getEffectsForPhase(PolicyPhase.GATHERING);
+        List<PolicyEffect> effects = policyEngine.getEffectsForPhase(PolicyPhase.RESOURCE_COLLECTION);
         assertEquals(3, effects.size());
         // Should be sorted by priority: 100, 150, 200
         assertEquals(100, effects.get(0).getPriority());
@@ -56,8 +56,8 @@ public class PolicyEngineTest {
 
     @Test
     public void testExecutePhaseWithFiltering() {
-        TestEffect shouldApply = new TestEffect(PolicyPhase.GATHERING, 100, true);
-        TestEffect shouldNotApply = new TestEffect(PolicyPhase.GATHERING, 200, false);
+        TestEffect shouldApply = new TestEffect(PolicyPhase.RESOURCE_COLLECTION, 100, true);
+        TestEffect shouldNotApply = new TestEffect(PolicyPhase.RESOURCE_COLLECTION, 200, false);
 
         policyEngine.registerEffect(shouldApply);
         policyEngine.registerEffect(shouldNotApply);
@@ -65,7 +65,7 @@ public class PolicyEngineTest {
         Tribe tribe = new Tribe("Test", "Test");
         TickContext context = new TickContext(tribe, familyService, new Random());
 
-        policyEngine.executePhase(PolicyPhase.GATHERING, context);
+        policyEngine.executePhase(PolicyPhase.RESOURCE_COLLECTION, context);
 
         assertTrue(shouldApply.wasApplied);
         assertFalse(shouldNotApply.wasApplied);
@@ -73,30 +73,30 @@ public class PolicyEngineTest {
 
     @Test
     public void testMultiplePhases() {
-        TestEffect gatheringEffect = new TestEffect(PolicyPhase.GATHERING, 100);
-        TestEffect decayEffect = new TestEffect(PolicyPhase.STORAGE_DECAY, 100);
+        TestEffect collectionEffect = new TestEffect(PolicyPhase.RESOURCE_COLLECTION, 100);
+        TestEffect decayEffect = new TestEffect(PolicyPhase.RESOURCE_DECAY, 100);
 
-        policyEngine.registerEffect(gatheringEffect);
+        policyEngine.registerEffect(collectionEffect);
         policyEngine.registerEffect(decayEffect);
 
         assertEquals(2, policyEngine.getEffectCount());
-        assertEquals(1, policyEngine.getEffectsForPhase(PolicyPhase.GATHERING).size());
-        assertEquals(1, policyEngine.getEffectsForPhase(PolicyPhase.STORAGE_DECAY).size());
-        assertEquals(0, policyEngine.getEffectsForPhase(PolicyPhase.AGING).size());
+        assertEquals(1, policyEngine.getEffectsForPhase(PolicyPhase.RESOURCE_COLLECTION).size());
+        assertEquals(1, policyEngine.getEffectsForPhase(PolicyPhase.RESOURCE_DECAY).size());
+        assertEquals(0, policyEngine.getEffectsForPhase(PolicyPhase.POPULATION_PROGRESS).size());
     }
 
     @Test
     public void testGetEffectSummary() {
-        TestEffect effect1 = new TestEffect(PolicyPhase.GATHERING, 100);
-        TestEffect effect2 = new TestEffect(PolicyPhase.STORAGE_DECAY, 100);
+        TestEffect effect1 = new TestEffect(PolicyPhase.RESOURCE_COLLECTION, 100);
+        TestEffect effect2 = new TestEffect(PolicyPhase.RESOURCE_DECAY, 100);
 
         policyEngine.registerEffect(effect1);
         policyEngine.registerEffect(effect2);
 
         var summary = policyEngine.getEffectSummary();
-        assertTrue(summary.containsKey(PolicyPhase.GATHERING));
-        assertTrue(summary.containsKey(PolicyPhase.STORAGE_DECAY));
-        assertTrue(summary.get(PolicyPhase.GATHERING).contains("TestEffect"));
+        assertTrue(summary.containsKey(PolicyPhase.RESOURCE_COLLECTION));
+        assertTrue(summary.containsKey(PolicyPhase.RESOURCE_DECAY));
+        assertTrue(summary.get(PolicyPhase.RESOURCE_COLLECTION).contains("TestEffect"));
     }
 
     // Test implementation of PolicyEffect

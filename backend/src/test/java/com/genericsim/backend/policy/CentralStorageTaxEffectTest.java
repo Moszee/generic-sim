@@ -27,7 +27,7 @@ public class CentralStorageTaxEffectTest {
 
     @Test
     public void testPhaseAndPriority() {
-        assertEquals(PolicyPhase.POST_GATHERING, effect.getPhase());
+        assertEquals(PolicyPhase.PRODUCTION, effect.getPhase());
         assertEquals(100, effect.getPriority());
     }
 

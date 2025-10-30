@@ -12,15 +12,15 @@ import org.springframework.stereotype.Component;
  * Decay is applied to both family storage and central storage at a
  * configurable rate and interval.
  * 
- * This executes during STORAGE_DECAY phase, after resource consumption
- * but before aging and progress calculation.
+ * This executes during RESOURCE_DECAY phase, after upkeep consumption
+ * but before population and society progress.
  */
 @Component
 public class StorageDecayEffect implements PolicyEffect {
     
     @Override
     public PolicyPhase getPhase() {
-        return PolicyPhase.STORAGE_DECAY;
+        return PolicyPhase.RESOURCE_DECAY;
     }
     
     @Override

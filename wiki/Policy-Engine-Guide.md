@@ -12,12 +12,12 @@ The **Policy Engine** is an extensible architecture for implementing game polici
 
 Defines the distinct phases where policy effects can execute during a simulation tick:
 
-- **GATHERING** - Resource collection by tribe members
-- **POST_GATHERING** - Processing after gathering (e.g., taxation)
-- **FAMILY_UPKEEP** - Resource consumption and family needs
-- **STORAGE_DECAY** - Periodic resource spoilage
-- **AGING** - Age advancement and role transitions
-- **PROGRESS_CALCULATION** - Technology/culture progress computation
+- **RESOURCE_COLLECTION** - When entities gather or acquire resources
+- **PRODUCTION** - When entities create or transform resources into goods
+- **UPKEEP** - Resource consumption for maintenance and daily needs
+- **RESOURCE_DECAY** - Periodic degradation or spoilage of stored resources
+- **POPULATION_PROGRESS** - Individual entity advancement and changes
+- **SOCIETY_PROGRESS** - Collective advancement in culture, technology, and organization
 - **CLEANUP** - End-of-tick cleanup and state reconciliation
 
 #### 2. PolicyEffect (Interface)
@@ -83,14 +83,14 @@ public class MyCustomEffect implements PolicyEffect {
     @Override
     public PolicyPhase getPhase() {
         // Choose the phase based on when your effect should execute:
-        // - GATHERING: Modify gathering rates/mechanics
-        // - POST_GATHERING: Process collected resources (taxes, storage)
-        // - FAMILY_UPKEEP: Modify consumption or sharing
-        // - STORAGE_DECAY: Apply periodic resource degradation
-        // - AGING: Modify aging or role transitions
-        // - PROGRESS_CALCULATION: Modify progress/culture generation
+        // - RESOURCE_COLLECTION: Modify resource gathering/acquisition rates
+        // - PRODUCTION: Process/transform collected resources (taxes, crafting)
+        // - UPKEEP: Modify consumption or sharing
+        // - RESOURCE_DECAY: Apply periodic resource degradation
+        // - POPULATION_PROGRESS: Modify aging, skill development, role transitions
+        // - SOCIETY_PROGRESS: Modify research, cultural development
         // - CLEANUP: Final state reconciliation
-        return PolicyPhase.POST_GATHERING;
+        return PolicyPhase.PRODUCTION;
     }
     
     @Override
@@ -179,7 +179,7 @@ public class MyCustomEffectTest {
     
     @Test
     public void testPhaseAndPriority() {
-        assertEquals(PolicyPhase.POST_GATHERING, effect.getPhase());
+        assertEquals(PolicyPhase.PRODUCTION, effect.getPhase());
         assertEquals(150, effect.getPriority());
     }
     
@@ -212,7 +212,7 @@ The `CentralStorageTaxEffect` demonstrates a complete policy effect:
 
 **Purpose:** Tax a percentage of gathered resources for central storage.
 
-**Phase:** POST_GATHERING (after resources are collected)
+**Phase:** PRODUCTION (after resources are collected, during processing/transformation)
 
 **Priority:** 100 (core mechanic)
 
@@ -262,7 +262,7 @@ Within a phase, effects execute in priority order (ascending). Effects with the 
 ### Phase Dependencies
 
 Later phases can depend on earlier phases having completed. For example:
-- STORAGE_DECAY depends on FAMILY_UPKEEP having consumed resources
+- RESOURCE_DECAY depends on UPKEEP having consumed resources
 - CLEANUP can safely remove deceased members after all other phases
 
 ### State Mutation
