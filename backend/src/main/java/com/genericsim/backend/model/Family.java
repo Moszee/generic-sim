@@ -33,9 +33,15 @@ public class Family {
     @JoinColumn(name = "storage_id", referencedColumnName = "id")
     private Resources storage;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "generic_storage_id", referencedColumnName = "id")
+    private ResourceStorage genericStorage;
+
     public Family(String name) {
         this.name = name;
         this.storage = new Resources(0, 0);
+        this.genericStorage = new ResourceStorage();
+        this.genericStorage.initializeDefaults();
     }
 
     public void addMember(Person person) {
