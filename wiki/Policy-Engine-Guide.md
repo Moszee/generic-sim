@@ -82,7 +82,14 @@ public class MyCustomEffect implements PolicyEffect {
     
     @Override
     public PolicyPhase getPhase() {
-        // Choose the appropriate phase for your effect
+        // Choose the phase based on when your effect should execute:
+        // - GATHERING: Modify gathering rates/mechanics
+        // - POST_GATHERING: Process collected resources (taxes, storage)
+        // - FAMILY_UPKEEP: Modify consumption or sharing
+        // - STORAGE_DECAY: Apply periodic resource degradation
+        // - AGING: Modify aging or role transitions
+        // - PROGRESS_CALCULATION: Modify progress/culture generation
+        // - CLEANUP: Final state reconciliation
         return PolicyPhase.POST_GATHERING;
     }
     
@@ -96,8 +103,9 @@ public class MyCustomEffect implements PolicyEffect {
     public boolean shouldApply(TickContext context) {
         // Check if this effect should run
         // Example: only apply if a specific policy setting is enabled
+        // Note: Replace with your actual policy method
         var policy = context.getTribe().getPolicy();
-        return policy != null && policy.isSomeFeatureEnabled();
+        return policy != null && policy.isEnableCentralStorage(); // Use real policy method
     }
     
     @Override
@@ -176,7 +184,8 @@ public class MyCustomEffectTest {
         // Test the filter condition
         Tribe tribe = new Tribe("Test", "Test");
         Policy policy = new Policy("Test", "Test", 10, 10, 5, 5);
-        policy.setSomeFeatureEnabled(true);
+        // Use actual policy method (replace with your policy's configuration)
+        policy.setEnableCentralStorage(true);
         tribe.setPolicy(policy);
         
         TickContext context = new TickContext(tribe, familyService, new Random());
@@ -268,17 +277,30 @@ When adding new policy types, update the `Policy` entity:
 @Entity
 @Table(name = "policies")
 public class Policy {
-    // Add new field
+    // Example: Add a boolean feature flag
+    // Replace 'hunterEfficiencyBoost' with your actual feature name
     @Column(nullable = false)
-    private boolean myNewFeatureEnabled = false;
+    private boolean enableHunterEfficiencyBoost = false;
     
-    // Add getter/setter
-    public boolean isMyNewFeatureEnabled() {
-        return myNewFeatureEnabled;
+    // Add getter/setter following JavaBean conventions
+    public boolean isEnableHunterEfficiencyBoost() {
+        return enableHunterEfficiencyBoost;
     }
     
-    public void setMyNewFeatureEnabled(boolean enabled) {
-        this.myNewFeatureEnabled = enabled;
+    public void setEnableHunterEfficiencyBoost(boolean enabled) {
+        this.enableHunterEfficiencyBoost = enabled;
+    }
+    
+    // Example: Add a numeric configuration
+    @Column(nullable = false)
+    private int hunterEfficiencyBoostPercent = 10;
+    
+    public int getHunterEfficiencyBoostPercent() {
+        return hunterEfficiencyBoostPercent;
+    }
+    
+    public void setHunterEfficiencyBoostPercent(int percent) {
+        this.hunterEfficiencyBoostPercent = percent;
     }
 }
 ```
