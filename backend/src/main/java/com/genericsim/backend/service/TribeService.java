@@ -4,6 +4,9 @@ import com.genericsim.backend.dto.PolicyUpdateDTO;
 import com.genericsim.backend.dto.TribeStateDTO;
 import com.genericsim.backend.dto.TribeStatisticsDTO;
 import com.genericsim.backend.model.*;
+import com.genericsim.backend.policy.PolicyEngine;
+import com.genericsim.backend.policy.PolicyPhase;
+import com.genericsim.backend.policy.TickContext;
 import com.genericsim.backend.repository.TribeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,11 +20,13 @@ public class TribeService {
 
     private final TribeRepository tribeRepository;
     private final FamilyService familyService;
+    private final PolicyEngine policyEngine;
     private final Random random = new Random();
 
-    public TribeService(TribeRepository tribeRepository, FamilyService familyService) {
+    public TribeService(TribeRepository tribeRepository, FamilyService familyService, PolicyEngine policyEngine) {
         this.tribeRepository = tribeRepository;
         this.familyService = familyService;
+        this.policyEngine = policyEngine;
     }
 
     @Transactional
@@ -74,9 +79,19 @@ public class TribeService {
         // Increment tick
         tribe.setCurrentTick(tribe.getCurrentTick() + 1);
         
+        // Create tick context for policy engine
+        TickContext context = new TickContext(tribe, familyService, random);
+        
         // Calculate elder count and bonuses for this tick
         int elderCount = (int) countByAgeGroup(tribe, Person.AgeGroup.ELDER);
         double elderGatheringBonus = 1.0 + (elderCount * 0.02); // 2% per elder
+        context.setElderCount(elderCount);
+        context.setElderGatheringBonus(elderGatheringBonus);
+        
+        // Snapshot family storage before gathering
+        for (Family family : tribe.getFamilies()) {
+            context.snapshotFamilyStorage(family);
+        }
         
         // Phase 1: Gathering - resources go to family storage
         for (Person person : tribe.getMembers()) {
@@ -111,27 +126,16 @@ public class TribeService {
                 }
             }
             
-            // Add gathered resources to family storage (or central if no family)
+            // Add gathered resources to family storage
             if (person.getFamily() != null) {
                 Resources familyStorage = person.getFamily().getStorage();
-                
-                // Apply central storage tax if enabled
-                if (tribe.getPolicy().isEnableCentralStorage()) {
-                    int taxRate = tribe.getPolicy().getCentralStorageTaxRate();
-                    int foodTax = (foodGathered * taxRate) / 100;
-                    int waterTax = (waterGathered * taxRate) / 100;
-                    
-                    tribe.getCentralStorage().setFood(tribe.getCentralStorage().getFood() + foodTax);
-                    tribe.getCentralStorage().setWater(tribe.getCentralStorage().getWater() + waterTax);
-                    
-                    foodGathered -= foodTax;
-                    waterGathered -= waterTax;
-                }
-                
                 familyStorage.setFood(familyStorage.getFood() + foodGathered);
                 familyStorage.setWater(familyStorage.getWater() + waterGathered);
             }
         }
+        
+        // Execute policy engine for post-gathering phase (e.g., central storage tax)
+        policyEngine.executePhase(PolicyPhase.POST_GATHERING, context);
         
         // Phase 2: Family upkeep and sharing
         for (Family family : tribe.getFamilies()) {
@@ -165,10 +169,8 @@ public class TribeService {
             }
         }
         
-        // Phase 3: Storage decay (periodic)
-        if (tribe.getCurrentTick() % tribe.getPolicy().getStorageDecayInterval() == 0) {
-            familyService.applyStorageDecay(tribe, tribe.getPolicy().getStorageDecayRate());
-        }
+        // Execute policy engine for storage decay phase
+        policyEngine.executePhase(PolicyPhase.STORAGE_DECAY, context);
         
         // Phase 4: Aging and role transitions
         if (tribe.getCurrentTick() % 365 == 0) {
